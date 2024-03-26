@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="230sp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="20sp"
+            android:layout_width="160sp"
+            android:layout_height="180sp">
+            <ImageView
+                android:id="@+id/item_image"
+                android:layout_width="160sp"
+                android:layout_height="180sp"
+                android:scaleType="fitXY"
+                android:src="@drawable/plastic"/>
+        </androidx.cardview.widget.CardView>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="180sp"
+            android:layout_weight="1"
+            android:layout_marginStart="10sp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_itemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nondo za Kujengea"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/tv_itemLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Iyumbu, Dodoma"
+                android:textColor="@color/black"
+                android:drawableLeft="@drawable/location"
+                android:drawablePadding="7sp"
+                android:layout_marginTop="7sp"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/tv_itemOwner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/person_vector"
+                android:text="Gidion Mushi"
+                android:textColor="@color/black"
+                android:layout_marginTop="7sp"
+                android:drawablePadding="10sp"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/tv_itemUploadDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="12/12/2024 11:11am"
+                android:drawableLeft="@drawable/calender"
+                android:layout_marginTop="7sp"
+                android:drawablePadding="6sp"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/tv_itemWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="55 kg"
+                android:drawablePadding="7sp"
+                android:drawableLeft="@drawable/balance"
+                android:layout_marginTop="7sp"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

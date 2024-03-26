@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "361273136821",
+    "project_id": "wmea-app-4917c",
+    "storage_bucket": "wmea-app-4917c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361273136821:android:b7ab655e51d064a58950fc",
+        "android_client_info": {
+          "package_name": "com.example.wmeaapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVzDd8g7XTYMrm4Jl9C-d5gv_rwNHQXcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

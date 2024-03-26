@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">WMEA App</string>
+    <string name="title_activity_dashbord">Dashbord</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="chatbot">Anything to ask?\n Here is intelligence Chat Bot \n You can ask.</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="about_us">Waste Management and Environmental Awareness (WMEA) is a mobile application designed to educate and empower users to address environmental challenges and adopt sustainable waste management practices. It offers a wealth of educational resources covering topics such as waste management, recycling, pollution prevention, and sustainable living. Additionally, WMEA provides practical tools like waste sorting guides, recycling locator maps, and tips for waste reduction to help users make eco-friendly choices in their daily lives. The app also fosters community engagement through social networking features, enabling users to connect, share ideas, and participate in environmental initiatives. WMEA aims to bridge the gap between environmental knowledge and action by inspiring individuals and communities to become stewards of the environment. With its comprehensive approach to environmental awareness and practical solutions, WMEA empowers users to make a positive impact and contribute to a cleaner, healthier planet.</string>
+</resources>
