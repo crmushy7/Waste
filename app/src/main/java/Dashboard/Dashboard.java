@@ -134,15 +134,12 @@ public class Dashboard extends AppCompatActivity {
     public void onBackPressed() {
         if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
             super.onBackPressed();
-            return;
         } else {
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
-
-            mBackPressed = System.currentTimeMillis();
         }
-        ;
-
+        mBackPressed = System.currentTimeMillis();
     }
+
 
 
 }

@@ -122,6 +122,8 @@ public class UploadPage extends AppCompatActivity {
                     useremail=UserDetails.getEmail();
                     phonenumber=UserDetails.getPhoneNumber();
                     uploadToFirestore(v);
+                    materialT.setText("");
+                    materialU.setText("");
                 }
 
             }
@@ -271,7 +273,7 @@ public class UploadPage extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // Image uploaded successfully
                     Toast.makeText(UploadPage.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-
+                    startActivity(new Intent(UploadPage.this,Dashboard.class));
                     // Get the download URL
                     imagesRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
@@ -312,6 +314,7 @@ public class UploadPage extends AppCompatActivity {
                     @Override
                     public void onSuccess(Object o) {
                         Toast.makeText(UploadPage.this, "Image URL saved to Firestore", Toast.LENGTH_SHORT).show();
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

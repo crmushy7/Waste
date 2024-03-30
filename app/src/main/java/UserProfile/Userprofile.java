@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Adapters.ItemSetGet;
 import Authentication.RegistrationMod;
 import Dashboard.Dashboard;
 import Items.UploadPage;
@@ -53,6 +55,7 @@ public class Userprofile extends AppCompatActivity {
     private  AlertDialog dialog;
     Handler handler;
     ProgressDialog progressDialog;
+    public static TextView userName,userphone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +69,9 @@ public class Userprofile extends AppCompatActivity {
         LinearLayout aboutUs=findViewById(R.id.up_aboutUs);
         LinearLayout faq=findViewById(R.id.up_faq);
         LinearLayout notifications=findViewById(R.id.up_notifications);
-        TextView userName=findViewById(R.id.up_username);
+        userName=findViewById(R.id.up_username);
         TextView useremail=findViewById(R.id.up_userEmail);
-        TextView userphone=findViewById(R.id.up_userPhone);
+        userphone=findViewById(R.id.up_userPhone);
         handler=new Handler(Looper.getMainLooper());
 
         handler.post(() -> {
@@ -240,7 +243,10 @@ public class Userprofile extends AppCompatActivity {
                     if (new_phonenumber.isEmpty()){
                         progressDialog.dismiss();
                         number_et.setError("Fill this!");
-                    }else{
+                    } else if (new_phonenumber.length()<10) {
+                        number_et.setError("Numbers must be 10");
+                        progressDialog.dismiss();
+                    } else{
                         updateToFirebase(new_phonenumber,updateType);
                     }
                 }
@@ -273,11 +279,15 @@ public class Userprofile extends AppCompatActivity {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if (task.isSuccessful()) {
-                                                                Toast.makeText(Userprofile.this, "Updated successfully,log in again", Toast.LENGTH_LONG).show();
-                                                                FirebaseAuth.getInstance().signOut();
-                                                                Intent intent = new Intent(Userprofile.this, RegistrationMod.class);
-                                                                startActivity(intent);
-                                                                finish();
+                                                                Toast.makeText(Userprofile.this, "Updated successfully", Toast.LENGTH_LONG).show();
+                                                                SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                                                                SharedPreferences.Editor editor= sharedPreferences.edit();
+                                                                editor.putString("password",newData+"");
+                                                                editor.apply();
+                                                                UserDetails.init(getApplicationContext());
+                                                                refresh();
+                                                                dialog.dismiss();
+                                                                progressDialog.dismiss();
                                                             }else{
                                                                 progressDialog.dismiss();
                                                                 Exception exception = task.getException();
@@ -296,13 +306,55 @@ public class Userprofile extends AppCompatActivity {
                                         }
                                     });
 
-                                }else{
-                                    Toast.makeText(Userprofile.this, "Updated successfully,log in again", Toast.LENGTH_LONG).show();
-                                    FirebaseAuth.getInstance().signOut();
+                                }else if(updateChild=="Fullname"){
+                                    updateUserItems("Fullname",newData);
+                                    Toast.makeText(Userprofile.this, "Updated successfully", Toast.LENGTH_LONG).show();
+                                    SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                                    SharedPreferences.Editor editor= sharedPreferences.edit();
+                                    editor.putString("full_name",newData+"");
+                                    editor.apply();
+                                    UserDetails.init(getApplicationContext());
+                                    refresh();
+                                    dialog.dismiss();
                                     progressDialog.dismiss();
-                                    Intent intent = new Intent(Userprofile.this, RegistrationMod.class);
-                                    startActivity(intent);
-                                    finish();
+                                }else {
+                                    DatabaseReference itemRefPlastic= FirebaseDatabase.getInstance().getReference()
+                                            .child("Uploads");
+                                    itemRefPlastic.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                                String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
+                                                if (owner_ID != null && owner_ID.equalsIgnoreCase(FirebaseAuth.getInstance().getUid())){
+                                                    itemRefPlastic.child(dataSnapshot.getKey()).child("Owner PhoneNumber").setValue(newData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                        }
+                                                    });
+                                                }else {
+                                                }
+
+
+
+                                            }
+
+                                        }
+
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                    Toast.makeText(Userprofile.this, "Updated successfully", Toast.LENGTH_LONG).show();
+                                    SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                                    SharedPreferences.Editor editor= sharedPreferences.edit();
+                                    editor.putString("phone_number",newData+"");
+                                    editor.apply();
+                                    UserDetails.init(getApplicationContext());
+                                    refresh();
+                                    dialog.dismiss();
+                                    progressDialog.dismiss();
                                 }
                             }
                         }
@@ -322,6 +374,42 @@ public class Userprofile extends AppCompatActivity {
 
             }
         });
+    }
+    public void updateUserItems(String childName ,String newData){
+        DatabaseReference itemRefPlastic= FirebaseDatabase.getInstance().getReference()
+                .child("Uploads");
+        itemRefPlastic.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
+                    if (owner_ID != null && owner_ID.equalsIgnoreCase(FirebaseAuth.getInstance().getUid())){
+                        itemRefPlastic.child(dataSnapshot.getKey()).child("Owner Name").setValue(newData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                            }
+                        });
+                    }else {
+                    }
+
+
+
+                }
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void refresh(){
+        userName=findViewById(R.id.up_username);
+        userphone=findViewById(R.id.up_userPhone);
+        userName.setText(UserDetails.getFullName());
+        userphone.setText(UserDetails.getPhoneNumber());
     }
 
 }

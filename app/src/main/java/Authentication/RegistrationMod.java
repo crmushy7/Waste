@@ -165,7 +165,9 @@ public class RegistrationMod extends AppCompatActivity {
                     return;
                 } else if (pNumber.isEmpty()) {
                     etPhone.setError("Fill your phonenumber");
-                }else{
+                } else if (pNumber.length()<10) {
+                    etPhone.setError("Numbers must be 10");
+                } else{
                     userEmail=email;
                     phoneNumber=pNumber;
                     EmailPh.setVisibility(View.GONE);
@@ -195,6 +197,8 @@ public class RegistrationMod extends AppCompatActivity {
                 String confP=etConfirmP.getText().toString();
                 if (pass.isEmpty()){
                     etPassword.setError("Fill your password");
+                } else if (pass.length()<6) {
+                    etPassword.setError("Must contain atleast six characters");
                 } else if (confP.isEmpty()) {
                     etConfirmP.setError("Fill your password");
                 } else if (!(pass.equals(confP))) {

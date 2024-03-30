@@ -18,6 +18,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.wmeaapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,6 +72,8 @@ public class MaterialRequest extends AppCompatActivity {
                 .load(getIntent().getStringExtra("imageurl"))
                 .into(itemimage);
 
+
+        String ownerId = getIntent().getStringExtra("ownerID");
         itemname.setText(getIntent().getStringExtra("itemtitle1") + "");
         itemname2.setText(getIntent().getStringExtra("itemtitle1") + "");
         itemowner.setText(getIntent().getStringExtra("username") + "");
@@ -88,93 +93,57 @@ public class MaterialRequest extends AppCompatActivity {
             }
         });
 
-        request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handler.post(() -> {
-                    progressDialog.setMessage("Please wait...");
-                    progressDialog.setCancelable(false);
-//                    progressDialog.show();
-                });
+        if (ownerId.equalsIgnoreCase(FirebaseAuth.getInstance().getUid())){
+            request.setText("Delete");
 
-                // Get the item owner's user ID
-                String ownerId = getIntent().getStringExtra("ownerID");
+            request.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handler.post(() -> {
+                        progressDialog = new ProgressDialog(MaterialRequest.this);
+                        progressDialog.setMessage("Deleting, Please wait.....Make sure you have a stable internet connection!");
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+                    });
+                    DatabaseReference itemRefPlastic= FirebaseDatabase.getInstance().getReference()
+                            .child("Uploads");
+                    itemRefPlastic.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                String imageurlExisting=dataSnapshot.child("ImageUrl").getValue(String.class);
+                                if (imageurlExisting != null && imageurlExisting.equalsIgnoreCase(getIntent().getStringExtra("imageurl"))){
+                                    itemRefPlastic.child(dataSnapshot.getKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            handler.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    progressDialog.dismiss();
+                                                    Toast.makeText(MaterialRequest.this, "Deleted Successfully!", Toast.LENGTH_SHORT).show();
+                                                    startActivity(new Intent(MaterialRequest.this,Dashboard.class));
+                                                }
+                                            },5000);
+                                        }
+                                    });
+                                }else {
+                                }
 
-                // Retrieve the FCM token of the item owner from Firebase Database
-                DatabaseReference ownerRef = FirebaseDatabase.getInstance().getReference().child("All Users").child(ownerId).child("Details").child("FCM Token");
-                ownerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            String ownerFCMToken = snapshot.getValue(String.class);
-                            // Prepare the notification message
-//                            Toast.makeText(MaterialRequest.this, ownerFCMToken+"", Toast.LENGTH_SHORT).show();
-                            String notificationMessage = "You have a new request for the item.";
 
-                            // Send the notification to the owner
-                            sendNotificationToUser(ownerFCMToken, notificationMessage);
+
+                            }
+
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle database error
-                    }
-                });
-            }
 
-            private void sendNotificationToUser(String ownerFCMToken, String notificationMessage) {
-//                AsyncTask.execute(() -> {
-//                    try {
-//                        URL url = new URL("https://fcm.googleapis.com/v1/projects/wmea-app-4917c/messages:send");
-//                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                        conn.setRequestProperty("Authorization", "key=AAAAVB2OlrU:APA91bH6x8CXoGs6VcqpwRvsxbOFgcucfAl6EwDdhwB7F5Iy27IngoNGOHdGIAb0KwHQT1GefgR7tpDI2o0FyQHFOoXHSK3BheRp2bkOOilAGwrMu87mGn1g4rMNgrXwiievZbcJfJJa");
-//                        conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-//                        conn.setRequestMethod("POST");
-//                        conn.setDoOutput(true);
-//
-//                        JSONObject jsonRequest = new JSONObject();
-//                        jsonRequest.put("notification", new JSONObject()
-//                                .put("title", "New Request")
-//                                .put("body", notificationMessage));
-//                        jsonRequest.put("to", ownerFCMToken);
-//
-//                        OutputStream outputStream = conn.getOutputStream();
-//                        outputStream.write(jsonRequest.toString().getBytes("UTF-8"));
-//                        outputStream.close();
-//
-//                        int responseCode = conn.getResponseCode();
-//                        Log.d("FCM_DEBUG", "Response Code: " + responseCode);
-//                        if (responseCode == HttpURLConnection.HTTP_OK) {
-//                            InputStream inputStream = conn.getInputStream();
-//                            // Process the response if needed
-//                        } else {
-//                            InputStream errorStream = conn.getErrorStream();
-//                            Log.e("FCM_DEBUG", "Error Stream: " + errorStream);
-//                            // Handle the error
-//                        }
-//
-//                        conn.disconnect();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        Log.e("FCM_DEBUG", "Exception: " + e.getMessage());
-//                    }
-//                });
-                String targetUserToken = ownerFCMToken+"";
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                // Create an FCM message and send it to the target user
-                // Use the Firebase Admin SDK or FCM API here
-                // Example FCM message creation and sending logic
-                HashMap<String,String> map=new HashMap<>();
-                map.put("title","Notification Title");
-                map.put("body","Notification body");
-                FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(targetUserToken)
-                        .setMessageId("1")
-                        .setData(map)
-                        .build());
-                Log.d("FCM_DEBUG", "Response Code: " + ownerFCMToken);
-            }
-        });
+                        }
+                    });
+                }
+            });
+        }
     }
     @Override
     public void onBackPressed() {
