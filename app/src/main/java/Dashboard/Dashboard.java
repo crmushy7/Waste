@@ -37,7 +37,7 @@ import UserProfile.Userprofile;
 
 public class Dashboard extends AppCompatActivity {
 
-    private static final long TIME_INTERVAL = 2000; // Time interval for double press in milliseconds
+    private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
 
     @Override

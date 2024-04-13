@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -46,6 +50,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +58,7 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
+import Adapters.ImageAdapter;
 import Adapters.ImageModel;
 import Authentication.RegistrationMod;
 import Dashboard.Dashboard;
@@ -80,11 +86,20 @@ public class UploadPage extends AppCompatActivity {
     public static String uploadDate;
     private static final long TIME_INTERVAL = 2000; // Time interval for double press in milliseconds
     private long mBackPressed;
+    private RecyclerView recyclerView;
+    private ArrayList<Uri> imageUris = new ArrayList<>();
+    private ImageAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapter = new ImageAdapter(getApplicationContext(),imageUris);
+        recyclerView.setAdapter(adapter);
 
         firebaseDatabase= FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference();
@@ -92,7 +107,6 @@ public class UploadPage extends AppCompatActivity {
         handler=new Handler(Looper.getMainLooper());
         EditText materialT=findViewById(R.id.upl_materialTitle);
         EditText materialU=findViewById(R.id.upl_materialUnit);
-        imageView = findViewById(R.id.upl_previewImage);
         TextView usernametv=findViewById(R.id.upl_displayuser);
 
         Spinner spinner=findViewById(R.id.materialtype_spinner);
@@ -185,9 +199,12 @@ public class UploadPage extends AppCompatActivity {
     public void chooseFromFileManager(View view) {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // Allow multiple selection
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
 
     public void takePhoto(View view) {
         // Check if the camera permission is not granted yet
@@ -199,33 +216,40 @@ public class UploadPage extends AppCompatActivity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, CAMERA_REQUEST);
         }
-
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            // Image selected from file manager
-            imageUri = data.getData();
-            imageView.setImageURI(imageUri);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            if (data.getData() != null) {
+                // Single image selected
+                Uri imageUri = data.getData();
+                imageUris.add(imageUri);
+            } else if (data.getClipData() != null) {
+                // Multiple images selected
+                ClipData clipData = data.getClipData();
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    Uri imageUri = clipData.getItemAt(i).getUri();
+                    imageUris.add(imageUri);
+                }
+            }
+            adapter.notifyDataSetChanged();
+            // Update UI to display selected images, e.g., add to a GridView or RecyclerView
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null) {
-            // Image captured from camera
+            // Handle camera pics
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-
-            // Convert Bitmap to Uri
-            imageUri = getImageUri(UploadPage.this, photo);
-
+            Uri imageUri = getImageUri(this, photo);
+            imageUris.add(imageUri);
+            adapter.notifyDataSetChanged(); // Update RecyclerView
         }
     }
 
-    public Uri getImageUri(AppCompatActivity inContext, Bitmap inImage) {
+    public Uri getImageUri(Context context, Bitmap image) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), image, "Title", null);
         return Uri.parse(path);
     }
 

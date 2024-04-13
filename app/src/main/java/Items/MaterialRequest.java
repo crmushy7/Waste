@@ -46,7 +46,7 @@ public class MaterialRequest extends AppCompatActivity {
     public static String fcmToken;
     Handler handler;
     ProgressDialog progressDialog;
-    private static final long TIME_INTERVAL = 2000; // Time interval for double press in milliseconds
+    private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
 
     @Override
