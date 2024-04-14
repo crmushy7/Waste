@@ -2,6 +2,7 @@ package Items;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -36,9 +37,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import Adapters.ImagePagerAdapter;
 import Dashboard.Dashboard;
 
 public class MaterialRequest extends AppCompatActivity {
@@ -48,11 +52,42 @@ public class MaterialRequest extends AppCompatActivity {
     ProgressDialog progressDialog;
     private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_material_request);
+
+
+// Retrieve the DatabaseReference for the specific item
+        DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
+                .child("Uploads").child(getIntent().getStringExtra("itemID")).child("ImageUrls");
+
+// Add a ValueEventListener to fetch the image URLs
+        itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> imageUrls = new ArrayList<>();
+                // Iterate through the child nodes to get each image URL
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String imageUrl = dataSnapshot.child("Image").getValue(String.class);
+                    imageUrls.add(imageUrl);
+                }
+                // Now you have the list of image URLs, you can use it to initialize your ViewPager
+                viewPager = findViewById(R.id.viewPager);
+                ImagePagerAdapter adapter = new ImagePagerAdapter(MaterialRequest.this, imageUrls,viewPager);
+                viewPager.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle errors here
+            }
+        });
+
+
+
         ImageView backNavbtn = findViewById(R.id.mr_back_navigation);
         TextView itemname = findViewById(R.id.mr_itemName);
         TextView itemname2 = findViewById(R.id.mr_itemName2);
@@ -63,14 +98,14 @@ public class MaterialRequest extends AppCompatActivity {
         TextView itemuploaddate = findViewById(R.id.mr_itemUploaddate);
         TextView itemlocation = findViewById(R.id.mr_itemLocation);
         TextView user_name = findViewById(R.id.mr_displayname);
-        ImageView itemimage = findViewById(R.id.mr_itemImage);
+//        ImageView itemimage = findViewById(R.id.mr_itemImage);
         Button request = findViewById(R.id.mr_requestbutton);
         handler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(MaterialRequest.this);
 
-        Glide.with(MaterialRequest.this)
-                .load(getIntent().getStringExtra("imageurl"))
-                .into(itemimage);
+//        Glide.with(MaterialRequest.this)
+//                .load(getIntent().getStringExtra("imageurl"))
+//                .into(itemimage);
 
 
         String ownerId = getIntent().getStringExtra("ownerID");
@@ -106,14 +141,12 @@ public class MaterialRequest extends AppCompatActivity {
                         progressDialog.show();
                     });
                     DatabaseReference itemRefPlastic= FirebaseDatabase.getInstance().getReference()
-                            .child("Uploads");
-                    itemRefPlastic.addValueEventListener(new ValueEventListener() {
+                            .child("Uploads").child(getIntent().getStringExtra("itemID"));
+                    itemRefPlastic.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                String imageurlExisting=dataSnapshot.child("ImageUrl").getValue(String.class);
-                                if (imageurlExisting != null && imageurlExisting.equalsIgnoreCase(getIntent().getStringExtra("imageurl"))){
-                                    itemRefPlastic.child(dataSnapshot.getKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    itemRefPlastic.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             handler.postDelayed(new Runnable() {
@@ -126,8 +159,7 @@ public class MaterialRequest extends AppCompatActivity {
                                             },5000);
                                         }
                                     });
-                                }else {
-                                }
+
 
 
 

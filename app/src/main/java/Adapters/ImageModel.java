@@ -1,21 +1,23 @@
 package Adapters;
 
+import java.util.List;
+
 public class ImageModel {
-    private String imageUrl;
+    private List<String> imageUrls;
 
     public ImageModel() {
         // Default constructor required for Firestore
     }
 
-    public ImageModel(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public ImageModel(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }

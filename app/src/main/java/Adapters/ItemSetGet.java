@@ -13,8 +13,9 @@ public class ItemSetGet {
     private  String itemUploadDate;
     private String itemWeight;
     private String itemImage;
+    private String itemUniqueID;
 
-    public ItemSetGet(String itemName, String ownerPhoneNumber, String ownerEmail, String itemType, String ownerID, String itemLocation, String itemOwner, String itemUploadDate, String itemWeight, String itemImage) {
+    public ItemSetGet(String itemName, String ownerPhoneNumber, String ownerEmail, String itemType, String ownerID, String itemLocation, String itemOwner, String itemUploadDate, String itemWeight, String itemImage, String itemUniqueID) {
         this.itemName = itemName;
         this.ownerPhoneNumber = ownerPhoneNumber;
         this.ownerEmail = ownerEmail;
@@ -25,6 +26,7 @@ public class ItemSetGet {
         this.itemUploadDate = itemUploadDate;
         this.itemWeight = itemWeight;
         this.itemImage = itemImage;
+        this.itemUniqueID = itemUniqueID;
     }
 
     public String getItemName() {
@@ -105,5 +107,13 @@ public class ItemSetGet {
 
     public void setItemImage(String itemImage) {
         this.itemImage = itemImage;
+    }
+
+    public String getItemUniqueID() {
+        return itemUniqueID;
+    }
+
+    public void setItemUniqueID(String itemUniqueID) {
+        this.itemUniqueID = itemUniqueID;
     }
 }

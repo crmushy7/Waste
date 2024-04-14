@@ -64,6 +64,11 @@ import Authentication.RegistrationMod;
 import Dashboard.Dashboard;
 import UserProfile.UserDetails;
 import UserProfile.Userprofile;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class UploadPage extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
@@ -75,8 +80,6 @@ public class UploadPage extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
-    Handler handler;
-    ProgressDialog progressDialog;
     public static String username;
     public static String useremail;
     public static String phonenumber;
@@ -89,12 +92,23 @@ public class UploadPage extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Uri> imageUris = new ArrayList<>();
     private ImageAdapter adapter;
+    Handler handler;
+    ProgressDialog progressDialog;
+    EditText materialT,materialU;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
+        handler=new Handler(Looper.getMainLooper());
+
+        handler.post(() -> {
+            progressDialog = new ProgressDialog(UploadPage.this);
+            progressDialog.setMessage("Please wait, make sure you have stable internet connection...");
+            progressDialog.setCancelable(false);
+        });
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -105,8 +119,8 @@ public class UploadPage extends AppCompatActivity {
         databaseReference=firebaseDatabase.getReference();
         firebaseAuth= FirebaseAuth.getInstance();
         handler=new Handler(Looper.getMainLooper());
-        EditText materialT=findViewById(R.id.upl_materialTitle);
-        EditText materialU=findViewById(R.id.upl_materialUnit);
+         materialT=findViewById(R.id.upl_materialTitle);
+         materialU=findViewById(R.id.upl_materialUnit);
         TextView usernametv=findViewById(R.id.upl_displayuser);
 
         Spinner spinner=findViewById(R.id.materialtype_spinner);
@@ -122,8 +136,10 @@ public class UploadPage extends AppCompatActivity {
                 String mat_unit=materialU.getText().toString().trim();
                 if (mat_title.isEmpty()){
                     materialT.setError("Fill title");
+                    materialT.requestFocus();
                 } else if (mat_unit.isEmpty()) {
                     materialU.setError("Fill here");
+                    materialU.requestFocus();
                 }else{
                     materialDescription=mat_title+"";
                     materialUnit=mat_unit+"";
@@ -136,8 +152,7 @@ public class UploadPage extends AppCompatActivity {
                     useremail=UserDetails.getEmail();
                     phonenumber=UserDetails.getPhoneNumber();
                     uploadToFirestore(v);
-                    materialT.setText("");
-                    materialU.setText("");
+
                 }
 
             }
@@ -254,100 +269,98 @@ public class UploadPage extends AppCompatActivity {
     }
 
     public void uploadToFirestore(View view) {
+        if (imageUris != null && !imageUris.isEmpty()) {
+            List<String> imageUrls = new ArrayList<>();
+            AtomicInteger uploadCount = new AtomicInteger(0); // Initialize upload count
+            int totalUploads = imageUris.size(); // Store the total number of uploads
+            progressDialog.show();
+            materialT.setText("");
+            materialU.setText("");
 
-        //tu upload firebase kwanza
+            // Iterate over each image URI in the list
+            for (Uri imageUri : imageUris) {
+                // Upload each image to Firebase Storage and collect image URLs
 
-        HashMap<String,Object> hashMap=new HashMap<>();
-        hashMap.put("Owner Name",username);
-        hashMap.put("Owner Location",useremail);
-        hashMap.put("Owner PhoneNumber",phonenumber);
-        hashMap.put("Upload Date",uploadDate);
-        hashMap.put("Material Type",materialType);
-        hashMap.put("Material Description",materialDescription);
-        hashMap.put("Material Unit",materialUnit);
+                uploadImageToStorage(imageUri, imageUrls, uploadCount, totalUploads);
+            }
+        } else {
+            Toast.makeText(this, "No images selected", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
+    private void uploadImageToStorage(Uri imageUri, List<String> imageUrls, AtomicInteger uploadCount, int totalUploads) {
         if (imageUri != null) {
-
-            handler.post(() -> {
-                progressDialog = new ProgressDialog(UploadPage.this);
-                progressDialog.setMessage("Please wait...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-            });
-
-            DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
-            DatabaseReference upload = databaseReferenceUpld.push();
-            upload.child("Owner Name").setValue(getIntent().getStringExtra("name")+"");
-            upload.child("Owner Location").setValue("iyumbu,Dodoma");
-            upload.child("Owner Email").setValue(getIntent().getStringExtra("email")+"");
-            upload.child("Owner PhoneNumber").setValue(getIntent().getStringExtra("pNumber")+"");
-            upload.child("Upload Date").setValue(uploadDate);
-            upload.child("Material Type").setValue(materialType);
-            upload.child("Material Description").setValue(materialDescription);
-            upload.child("Material Unit").setValue(materialUnit);
-            upload.child("Owner ID").setValue(FirebaseAuth.getInstance().getUid().toString());
+            // Create a reference to Firebase Storage
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
-            StorageReference imagesRef = storageRef.child("images/" + upload.getKey().toString());
+            final String uploadKey = UUID.randomUUID().toString();
+            StorageReference imagesRef = storageRef.child("images/" + uploadKey);
 
+            // Upload the image to Firebase Storage
             UploadTask uploadTask = imagesRef.putFile(imageUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Image uploaded successfully
-                    Toast.makeText(UploadPage.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(UploadPage.this,Dashboard.class));
-                    // Get the download URL
-                    imagesRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            // Image download URL retrieved
-                            String imageUrl = uri.toString();
-                            upload.child("ImageUrl").setValue(imageUrl);
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                // Image uploaded successfully
+                imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    // Image download URL retrieved
+                    String imageUrl = uri.toString();
+                    imageUrls.add(imageUrl); // Add image URL to the list
 
-
-                            // Save the image URL to Firestore
-                            saveImageUrlToFirestore(imageUrl);
-                        }
-                    });
-                    progressDialog.dismiss();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Image upload failed
-                    progressDialog.dismiss();
-                    Toast.makeText(UploadPage.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                    // Check if all uploads are completed
+                    if (uploadCount.incrementAndGet() == totalUploads) {
+                        // All uploads completed, save image URLs and additional data
+                        saveImageUrlToFirestore(imageUrls);
+                        saveAdditionalDataToDatabase(imageUrls);
+                        imageUris.clear();
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }).addOnFailureListener(e -> {
+                // Image upload failed
+                Toast.makeText(UploadPage.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
         } else {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void saveImageUrlToFirestore(String imageUrl) {
-        // Add code to save imageUrl to Firestore
+    private void saveImageUrlToFirestore(List<String> imageUrls) {
+        // Add code to save imageUrls to Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // For example, you can create a collection named "images" and add imageUrl as a document field
-        // You can also add more fields like timestamp, user ID, etc.
         // Replace "collectionName" with your actual collection name
         db.collection("images")
-                .add(new ImageModel(imageUrl))
-                .addOnSuccessListener(new OnSuccessListener() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        Toast.makeText(UploadPage.this, "Image URL saved to Firestore", Toast.LENGTH_SHORT).show();
-
-                    }
+                .add(new ImageModel(imageUrls))
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(UploadPage.this, "Image URLs saved to Firestore", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UploadPage.this, "Error saving image URL to Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    Toast.makeText(UploadPage.this, "Error saving image URLs to Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void saveAdditionalDataToDatabase(List<String> imageUrls) {
+        // Add additional data to Firebase Realtime Database
+        DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
+        DatabaseReference upload = databaseReferenceUpld.push();
+        upload.child("Owner Name").setValue(getIntent().getStringExtra("name")+"");
+        upload.child("Owner Location").setValue("iyumbu,Dodoma");
+        upload.child("Owner Email").setValue(getIntent().getStringExtra("email")+"");
+        upload.child("Owner PhoneNumber").setValue(getIntent().getStringExtra("pNumber")+"");
+        upload.child("Upload Date").setValue(uploadDate);
+        upload.child("Material Type").setValue(materialType);
+        upload.child("Material Description").setValue(materialDescription);
+        upload.child("Material Unit").setValue(materialUnit);
+        upload.child("Owner ID").setValue(FirebaseAuth.getInstance().getUid().toString());
+
+        // Store all image URLs in a child node
+        DatabaseReference imageUrlsRef = upload.child("ImageUrls");
+        for (String imageUrl : imageUrls) {
+            imageUrlsRef.push().child("Image").setValue(imageUrl);
+        }
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+        progressDialog.dismiss();
+    }
+
     @Override
     public void onBackPressed() {
         if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
