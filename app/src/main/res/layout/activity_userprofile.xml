@@ -493,32 +493,40 @@
             </LinearLayout>
         </LinearLayout>
         <!--    Layout yenye add button only-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="105sp"
-            android:orientation="vertical"
-            android:layout_marginBottom="20sp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110sp"
+        android:orientation="vertical"
+        android:layout_marginBottom="10sp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:id="@+id/rl_uploadButton"
+            android:layout_width="90sp"
+            android:layout_height="90sp"
             android:gravity="center"
-            android:layout_alignParentBottom="true">
+            android:clickable="true"
+            android:background="@drawable/round_bg_white">
             <RelativeLayout
-                android:id="@+id/rl_uploadButton"
-                android:layout_width="100sp"
-                android:layout_height="100sp"
+                android:layout_width="80sp"
+                android:layout_height="80sp"
                 android:gravity="center"
-                android:clickable="true"
-                android:background="@drawable/round_bg_white">
-                <RelativeLayout
-                    android:layout_width="90sp"
-                    android:layout_height="90sp"
-                    android:gravity="center"
-                    android:background="@drawable/rounded_ring"
-                    >
-                    <ImageView
-                        android:layout_width="80sp"
-                        android:layout_height="80sp"
-                        android:src="@drawable/add_icon"/>
-                </RelativeLayout>
+                android:background="@drawable/rounded_ring"
+                >
+                <ImageView
+                    android:layout_width="80sp"
+                    android:layout_height="80sp"
+                    android:src="@drawable/add_icon"/>
             </RelativeLayout>
-        </LinearLayout>
+        </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="upload"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
