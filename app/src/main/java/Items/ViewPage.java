@@ -106,7 +106,7 @@ public class ViewPage extends AppCompatActivity {
                                 if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")){
                                     String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                     String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                    String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                    String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                     String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                     String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                     String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -159,7 +159,7 @@ public class ViewPage extends AppCompatActivity {
                                     if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Metal")){
                                         String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                         String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                        String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                        String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                         String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                         String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                         String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -212,7 +212,7 @@ public class ViewPage extends AppCompatActivity {
                                     if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Wood")){
                                         String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                         String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                        String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                        String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                         String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                         String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                         String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -279,7 +279,7 @@ public class ViewPage extends AppCompatActivity {
                             if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")){
                                 String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                 String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                 String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -343,7 +343,7 @@ public class ViewPage extends AppCompatActivity {
                             if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Metal")){
                                 String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                 String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                 String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -408,7 +408,7 @@ public class ViewPage extends AppCompatActivity {
                             if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Wood")){
                                 String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                 String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                                String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                 String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
@@ -491,7 +491,7 @@ public class ViewPage extends AppCompatActivity {
                             }
 
                             // Create Item object with the details
-                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_location, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID);
+                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_location="", owner_name, item_uploaddate, item_materialunit, imageUrl, itemID);
                             itemSetGetsList.add(itemConstructor);
                         }
 
@@ -582,7 +582,7 @@ public class ViewPage extends AppCompatActivity {
                     String item_materialtype = dataSnapshot.child("Material Type").getValue(String.class);
                     String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                     String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                    String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
+                    String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                     String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                     String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                     String item_materialtitle = dataSnapshot.child("Material Description").getValue(String.class);

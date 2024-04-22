@@ -75,8 +75,6 @@ public class UploadPage extends AppCompatActivity {
     String[] dropDownData={"Plastic","Metal","Wood"};
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAMERA_REQUEST = 2;
-    private ImageView imageView;
-    private Uri imageUri;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -343,7 +341,7 @@ public class UploadPage extends AppCompatActivity {
         DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
         DatabaseReference upload = databaseReferenceUpld.push();
         upload.child("Owner Name").setValue(getIntent().getStringExtra("name")+"");
-        upload.child("Owner Location").setValue("iyumbu,Dodoma");
+        upload.child("Owner Notification").setValue("iyumbu,Dodoma");
         upload.child("Owner Email").setValue(getIntent().getStringExtra("email")+"");
         upload.child("Owner PhoneNumber").setValue(getIntent().getStringExtra("pNumber")+"");
         upload.child("Upload Date").setValue(uploadDate);
@@ -359,6 +357,8 @@ public class UploadPage extends AppCompatActivity {
         }
         Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
         progressDialog.dismiss();
+        startActivity(new Intent(UploadPage.this,Dashboard.class));
+        finish();
     }
 
     @Override

@@ -6,7 +6,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.wmeaapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,23 +25,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import Adapters.ImagePagerAdapter;
 import Dashboard.Dashboard;
+import Notification.Api;
+import Notification.User;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MaterialRequest extends AppCompatActivity {
 
@@ -53,11 +49,23 @@ public class MaterialRequest extends AppCompatActivity {
     private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
     private ViewPager viewPager;
+    public static final String CHANNEL_ID = "simplified_coding";
+    private static final String CHANNEL_NAME = "Simplified Coding";
+    private static final String CHANNEL_DESC = "Simplified Coding Notifications";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_material_request);
+        final User user = (User) getIntent().getSerializableExtra("user");
+        handler = new Handler(Looper.getMainLooper());
+        progressDialog = new ProgressDialog(MaterialRequest.this);
+
+        handler.post(() -> {
+            progressDialog = new ProgressDialog(MaterialRequest.this);
+            progressDialog.setMessage("Please wait.....Make sure you have a stable internet connection!");
+            progressDialog.setCancelable(false);
+        });
 
 
 // Retrieve the DatabaseReference for the specific item
@@ -100,8 +108,7 @@ public class MaterialRequest extends AppCompatActivity {
         TextView user_name = findViewById(R.id.mr_displayname);
 //        ImageView itemimage = findViewById(R.id.mr_itemImage);
         Button request = findViewById(R.id.mr_requestbutton);
-        handler = new Handler(Looper.getMainLooper());
-        progressDialog = new ProgressDialog(MaterialRequest.this);
+
 
 //        Glide.with(MaterialRequest.this)
 //                .load(getIntent().getStringExtra("imageurl"))
@@ -175,6 +182,29 @@ public class MaterialRequest extends AppCompatActivity {
                     });
                 }
             });
+        }else{
+            request.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressDialog.show();
+                    DatabaseReference userr=FirebaseDatabase.getInstance().getReference().child("All Users")
+                                    .child(getIntent().getStringExtra("ownerID")).child("Details");
+                    userr.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String token=snapshot.child("FCM Token").getValue(String.class);
+                            User user1=new User("any",token+"");
+                            sendNotification(user1,token);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
+            });
         }
     }
     @Override
@@ -188,6 +218,54 @@ public class MaterialRequest extends AppCompatActivity {
             mBackPressed = System.currentTimeMillis();
         }
         ;
+
+    }
+    private  void sendNotification(User user, String token){
+        String title = "WMEA App";
+        String body = "Your uploaded material was requested!";
+
+        if(title.isEmpty()){
+
+            return;
+        }
+
+        if(body.isEmpty()){
+
+            return;
+        }
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://dcts.staffgenie.co.tz/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        Call<ResponseBody> call = api.sendNotification(token, title, body);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        progressDialog.dismiss();
+                        Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Log.d("What",response+"");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(MaterialRequest.this, "Owner not notified! try again later", Toast.LENGTH_LONG).show();
+                Log.d("error",t+"");
+            }
+        });
 
     }
 }
