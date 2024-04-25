@@ -96,6 +96,7 @@
                         android:layout_height="60sp"
                         app:cardCornerRadius="2000sp">
                         <ImageView
+                            android:id="@+id/notificationIcon"
                             android:layout_width="60sp"
                             android:layout_height="60sp"
                             android:scaleType="fitXY"

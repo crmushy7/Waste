@@ -135,12 +135,13 @@ public class UploadPage extends AppCompatActivity {
                 if (mat_title.isEmpty()){
                     materialT.setError("Fill title");
                     materialT.requestFocus();
-                } else if (mat_unit.isEmpty()) {
-                    materialU.setError("Fill here");
-                    materialU.requestFocus();
                 }else{
+                    if (mat_unit.isEmpty()){
+                        materialUnit="No Unit";
+                    }else{
+                        materialUnit=mat_unit+"";
+                    }
                     materialDescription=mat_title+"";
-                    materialUnit=mat_unit+"";
                     Calendar calendar=Calendar.getInstance();
                     String currentdate= DateFormat.getDateInstance().format(calendar.getTime());
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());

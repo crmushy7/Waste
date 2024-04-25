@@ -27,7 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import Adapters.ImagePagerAdapter;
@@ -221,8 +223,10 @@ public class MaterialRequest extends AppCompatActivity {
 
     }
     private  void sendNotification(User user, String token){
-        String title = "WMEA App";
-        String body = "Your uploaded material was requested!";
+        String fullname=getIntent().getStringExtra("ownername");
+        String[] name=fullname.split(" ");
+        String title ="From: "+ getIntent().getStringExtra("username");
+        String body = name[0]+", Your uploaded material("+getIntent().getStringExtra("itemtitle1")+") was requested!";
 
         if(title.isEmpty()){
 
@@ -249,8 +253,22 @@ public class MaterialRequest extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
-                        progressDialog.dismiss();
-                        Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                        Calendar calendar = Calendar.getInstance();
+                        String currentdate = DateFormat.getInstance().format(calendar.getTime());
+                        DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                                        .child(getIntent().getStringExtra("ownerID")).push();
+                        uploadNotification.child("ItemID").setValue(getIntent().getStringExtra("itemID"));
+                        uploadNotification.child("Notification Title").setValue(title);
+                        uploadNotification.child("Notification Message").setValue(body);
+                        uploadNotification.child("Notification Status").setValue("Unread");
+                        uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                progressDialog.dismiss();
+                                Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     }catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -1,16 +1,21 @@
 package Dashboard;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,6 +37,7 @@ import java.net.URL;
 import Adapters.ItemsAdapter;
 import Items.UploadPage;
 import Items.ViewPage;
+import Other.Notifications;
 import UserProfile.UserDetails;
 import UserProfile.Userprofile;
 
@@ -39,12 +45,16 @@ public class Dashboard extends AppCompatActivity {
 
     private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
+    ImageView notificationicon;
+    AlertDialog dialog;
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         UserDetails.init(getApplicationContext());
+        context=Dashboard.this;
 
         LinearLayout profileBtn = findViewById(R.id.ll_profileBtn);
         RelativeLayout uploadBtn = findViewById(R.id.rl_uploadButton);
@@ -52,6 +62,35 @@ public class Dashboard extends AppCompatActivity {
         LinearLayout viewPagemetal = findViewById(R.id.ll_metalBtn);
         LinearLayout viewPagewood = findViewById(R.id.ll_woodBtn);
         TextView displayUsername = findViewById(R.id.displayUserName);
+        notificationicon=findViewById(R.id.notificationIcon);
+        notificationicon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Dashboard.this, Notifications.class));
+            }
+        });
+        AlertDialog.Builder builderchatboat=new AlertDialog.Builder(Dashboard.this);
+        View viewChat= LayoutInflater.from(Dashboard.this).inflate(R.layout.chatbot_alert, null);
+        Button later=viewChat.findViewById(R.id.chatbot_later);
+        Button viewChatbot=viewChat.findViewById(R.id.chatbot_view);
+        later.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        viewChatbot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Toast.makeText(Dashboard.this, "Chatbot coming soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builderchatboat.setView(viewChat);
+        dialog=builderchatboat.create();
+        dialog.show();
+        dialog.setCancelable(false);
 
 
         String fullName = UserDetails.getFullName();

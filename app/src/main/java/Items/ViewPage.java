@@ -491,7 +491,7 @@ public class ViewPage extends AppCompatActivity {
                             }
 
                             // Create Item object with the details
-                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_location="", owner_name, item_uploaddate, item_materialunit, imageUrl, itemID);
+                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_location=" ", owner_name, item_uploaddate, item_materialunit, imageUrl, itemID);
                             itemSetGetsList.add(itemConstructor);
                         }
 
@@ -521,22 +521,7 @@ public class ViewPage extends AppCompatActivity {
         adapter.setOnItemClickListener(new ItemsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, ItemSetGet itemSetGet) {
-                DatabaseReference userdbRef = FirebaseDatabase.getInstance().getReference()
-                        .child("All Users")
-                        .child(FirebaseAuth.getInstance().getUid())
-                        .child("Details");
 
-                userdbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // Retrieve user details directly from the snapshot
-                        String fullName = snapshot.child("Fullname").getValue(String.class);
-                        String phoneNumber = snapshot.child("PhoneNumber").getValue(String.class);
-                        String email = snapshot.child("username").getValue(String.class);
-                        String itemExist=itemSetGet.getItemName().toString();
-                        if (itemExist.equals("No matching items found")){
-                            Toast.makeText(ViewPage.this, "Item does not exist!", Toast.LENGTH_SHORT).show();
-                        }else {
                             Intent intent=new Intent(ViewPage.this,MaterialRequest.class);
                             intent.putExtra("ownername",itemSetGet.getItemOwner());
                             intent.putExtra("ownernumber",itemSetGet.getOwnerPhoneNumber());
@@ -549,21 +534,10 @@ public class ViewPage extends AppCompatActivity {
                             intent.putExtra("ownerID",itemSetGet.getOwnerID());
                             intent.putExtra("itemID",itemSetGet.getItemUniqueID());
                             intent.putExtra("imageurl",itemSetGet.getItemImage());
-                            intent.putExtra("username", fullName);
-                            intent.putExtra("userpNumber", phoneNumber);
-                            intent.putExtra("email", email);
+                            intent.putExtra("username", UserDetails.getFullName());
+                            intent.putExtra("userpNumber", UserDetails.getPhoneNumber());
+                            intent.putExtra("email", UserDetails.getEmail());
                             startActivityForResult(intent, REQUEST_CODE_MATERIAL_REQUEST);
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle error
-                    }
-                });
-
             }
         });
 
