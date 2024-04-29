@@ -230,7 +230,6 @@ public class RegistrationMod extends AppCompatActivity {
                     password=pass;
                     confirmpassword=confP;
                     userRegistration();
-                    Toast.makeText(RegistrationMod.this, "NAME: "+firstName+" "+lastName+"\n"+"Email: "+userEmail+"\n"+"Phone: "+phoneNumber+" \n"+"Password: "+password, Toast.LENGTH_LONG).show();
                 }
             }
         });

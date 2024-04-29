@@ -31,7 +31,7 @@
                 android:layout_width="250sp"
                 android:layout_height="250sp"
                 android:background="@color/white"
-                app:cardCornerRadius="1000sp"
+                app:cardCornerRadius="200000sp"
                 android:layout_marginTop="15sp"
                 >
                 <ImageView
@@ -55,7 +55,7 @@
                 android:layout_marginStart="20sp"
                 android:layout_marginEnd="20sp"
                 android:background="@drawable/card_bg_withborder"
-                android:text="WASTE MANAGEMENT AND ENVIRONMENTAL AWARENESS"/>
+                android:text="RENEWABLE MATERIAL AND ENVIRONMENTAL AWARENESS"/>
 
 
             <!--    jina la kwanza na la mwisho tu-->
@@ -416,13 +416,4 @@
 
         </LinearLayout>
     </ScrollView>
-
-
-
-
-
-
-
-
-
 </RelativeLayout>

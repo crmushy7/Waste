@@ -36,6 +36,7 @@ import Adapters.ImagePagerAdapter;
 import Dashboard.Dashboard;
 import Notification.Api;
 import Notification.User;
+import UserProfile.UserDetails;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,8 +53,6 @@ public class MaterialRequest extends AppCompatActivity {
     private long mBackPressed;
     private ViewPager viewPager;
     public static final String CHANNEL_ID = "simplified_coding";
-    private static final String CHANNEL_NAME = "Simplified Coding";
-    private static final String CHANNEL_DESC = "Simplified Coding Notifications";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,6 +194,7 @@ public class MaterialRequest extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String token=snapshot.child("FCM Token").getValue(String.class);
+                            fcmToken=token;
                             User user1=new User("any",token+"");
                             sendNotification(user1,token);
                         }
@@ -260,7 +260,13 @@ public class MaterialRequest extends AppCompatActivity {
                         uploadNotification.child("ItemID").setValue(getIntent().getStringExtra("itemID"));
                         uploadNotification.child("Notification Title").setValue(title);
                         uploadNotification.child("Notification Message").setValue(body);
+                        uploadNotification.child("Contact").setValue(UserDetails.getPhoneNumber());
                         uploadNotification.child("Notification Status").setValue("Unread");
+                        uploadNotification.child("Collector").setValue(UserDetails.getFullName());
+                        uploadNotification.child("CollectorID").setValue(FirebaseAuth.getInstance().getUid().toString());
+                        uploadNotification.child("Item Name").setValue(getIntent().getStringExtra("itemtitle1"));
+                        uploadNotification.child("Item Type").setValue(getIntent().getStringExtra("itemtype"));
+                        uploadNotification.child("Collector FCM Token").setValue(fcmToken);
                         uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
