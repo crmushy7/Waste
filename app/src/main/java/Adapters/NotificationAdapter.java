@@ -15,10 +15,13 @@ import com.example.wmeaapp.R;
 
 import java.util.List;
 
+import Other.Notifications;
+
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
     private List<NotificationSetGet> items;
     private OnItemClickListener mListener;
+    private OnItemLongClickListener mLongListener;
     private boolean clickable = true;
 
     public NotificationAdapter(List<NotificationSetGet> items) {
@@ -26,6 +29,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
+    }
+    public void setOnItemLongClickListener(OnItemLongClickListener ll) {
+        mLongListener=ll;
     }
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
@@ -57,6 +63,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 //            holder.receiptStatus.setBackgroundResource(R.drawable.roundedgreen);
 //        }
 
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mLongListener = null){
+                    mLongListener.onItemLongClick(position,item);
+                }
+                return false;
+            }
+        });
         // Set click listener
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +88,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public int getItemCount() {
         return items.size();
     }
+
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView notifiation_title;
@@ -96,6 +113,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
     }
 
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position, NotificationSetGet itemSetGet);
+    }
     public interface OnItemClickListener {
         void onItemClick(int position,NotificationSetGet itemSetGet);
     }

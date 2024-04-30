@@ -52,7 +52,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Notifications extends AppCompatActivity {
+public class Notifications extends AppCompatActivity implements NotificationAdapter.OnItemLongClickListener{
 
     private List<NotificationSetGet> notificationlist=new ArrayList<>();
     RecyclerView recyclerView;
@@ -70,8 +70,15 @@ public class Notifications extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(Notifications.this));
         adapter=new NotificationAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
+        adapter.setOnItemLongClickListener(Notifications.this);
         handler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(Notifications.this);
+        adapter.setOnItemLongClickListener(new NotificationAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position, NotificationSetGet itemSetGet) {
+
+            }
+        });
 
         handler.post(() -> {
             progressDialog = new ProgressDialog(Notifications.this);
@@ -193,6 +200,7 @@ public class Notifications extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
+                            progressDialog.show();
                             sendNotification(itemSetGet, "Accepted");
                         }
                     });
@@ -269,12 +277,14 @@ public class Notifications extends AppCompatActivity {
                                                             if (snapshot.exists()){
                                                                 modifyNotification.child("Request Status").setValue("Sold");
                                                                 modifyNotification.child("Notification Status").setValue(received);
+                                                            }else{
+                                                                progressDialog.dismiss();
                                                             }
                                                         }
 
                                                         @Override
                                                         public void onCancelled(@NonNull DatabaseError error) {
-
+                                                            progressDialog.dismiss();
                                                         }
                                                     });
                                                 }
@@ -283,7 +293,7 @@ public class Notifications extends AppCompatActivity {
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
-
+                                            progressDialog.dismiss();
                                         }
                                     });
                                 }else{
@@ -316,6 +326,7 @@ public class Notifications extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }else{
+                    progressDialog.dismiss();
                     Log.d("What",response+"");
                 }
             }
@@ -328,5 +339,12 @@ public class Notifications extends AppCompatActivity {
             }
         });
 
+    }
+    @Override
+    public void onItemLongClick(int position, NotificationSetGet itemSetGet) {
+        // Handle long click events here
+        Toast.makeText(this, "Item long clicked at position " + position, Toast.LENGTH_SHORT).show();
+
+        // Perform navigation or any other action based on long click
     }
 }
