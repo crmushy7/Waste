@@ -80,6 +80,7 @@ public class Notifications extends AppCompatActivity {
                         String matName=dataSnapshot.child("Item Name").getValue(String.class);
                         String matType=dataSnapshot.child("Item Type").getValue(String.class);
                         String collecName=dataSnapshot.child("Collector").getValue(String.class);
+                        String collecNo=dataSnapshot.child("Contact").getValue(String.class);
                         String itemRequestStatus=dataSnapshot.child("Request Status").getValue(String.class);
                         String collector_id=dataSnapshot.child("CollectorID").getValue(String.class);
                         String fcmt=dataSnapshot.child("Collector FCM Token").getValue(String.class);
@@ -169,7 +170,7 @@ public class Notifications extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        sendNotification();
+                        sendNotification(itemSetGet);
                     }
                 });
 
@@ -180,7 +181,7 @@ public class Notifications extends AppCompatActivity {
             }
         });
     }
-    private  void sendNotification(){
+    private  void sendNotification(NotificationSetGet itemSetGet){
         String fullname=getIntent().getStringExtra("ownername");
         String[] name=fullname.split(" ");
         String title ="From: "+ getIntent().getStringExtra("username");
@@ -204,7 +205,7 @@ public class Notifications extends AppCompatActivity {
 
         Api api = retrofit.create(Api.class);
 
-        Call<ResponseBody> call = api.sendNotification(token, title, body);
+        Call<ResponseBody> call = api.sendNotification(itemSetGet.getCollectorFCM(), title, body);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -215,15 +216,7 @@ public class Notifications extends AppCompatActivity {
                         String currentdate = DateFormat.getInstance().format(calendar.getTime());
                         DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
                                 .child(getIntent().getStringExtra("ownerID")).push();
-                        uploadNotification.child("ItemID").setValue(getIntent().getStringExtra("itemID"));
-                        uploadNotification.child("Notification Title").setValue(title);
-                        uploadNotification.child("Notification Message").setValue(body);
-                        uploadNotification.child("Contact").setValue(UserDetails.getPhoneNumber());
                         uploadNotification.child("Notification Status").setValue("Unread");
-                        uploadNotification.child("Collector").setValue(UserDetails.getFullName());
-                        uploadNotification.child("Item Name").setValue(getIntent().getStringExtra("itemtitle1"));
-                        uploadNotification.child("Item Type").setValue(getIntent().getStringExtra("itemtype"));
-                        uploadNotification.child("Collector FCM Token").setValue(fcmToken);
                         uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
