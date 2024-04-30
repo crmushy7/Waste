@@ -258,10 +258,12 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                 }else{
                     if (itemSetGet.getNotificationStatus().equals("Accepted")) {
                         Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
-                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())) {
-                        Toast.makeText(Notifications.this, "you already sold this! hold to delete!", Toast.LENGTH_LONG).show();
+                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())&& itemSetGet.getNotificationStatus().equals("Declined")) {
+                        Toast.makeText(Notifications.this, "you declined to sell this to "+itemSetGet.getCollectorName()+"! hold to delete!", Toast.LENGTH_LONG).show();
 
-                    }else
+                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())&& itemSetGet.getNotificationStatus().equals("Accepted")) {
+                        Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
+                    } else
                     {
                         Toast.makeText(Notifications.this, "your previous request was declined! consider requesting again! or hold to delete this notification", Toast.LENGTH_LONG).show();
                     }
@@ -368,7 +370,7 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 progressDialog.dismiss();
-                                Toast.makeText(Notifications.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
                             }
                         });
 
