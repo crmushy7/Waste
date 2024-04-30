@@ -170,7 +170,7 @@ public class Notifications extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        sendNotification(itemSetGet);
+                        sendNotification(itemSetGet,"Accepted");
                     }
                 });
 
@@ -181,11 +181,11 @@ public class Notifications extends AppCompatActivity {
             }
         });
     }
-    private  void sendNotification(NotificationSetGet itemSetGet){
-        String fullname=getIntent().getStringExtra("ownername");
+    private  void sendNotification(NotificationSetGet itemSetGet,String received){
+        String fullname=itemSetGet.getCollectorName();
         String[] name=fullname.split(" ");
-        String title ="From: "+ getIntent().getStringExtra("username");
-        String body = name[0]+", Your uploaded material("+getIntent().getStringExtra("itemtitle1")+") was requested!";
+        String title ="From: "+ UserDetails.getFullName();
+        String body = name[0]+", Your requested material("+itemSetGet.getItemName()+") was "+received+!";
 
         if(title.isEmpty()){
 
