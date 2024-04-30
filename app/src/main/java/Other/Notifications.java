@@ -121,7 +121,7 @@ public class Notifications extends AppCompatActivity {
             @Override
             public void onItemClick(int position, NotificationSetGet itemSetGet) {
 
-                if (itemSetGet.getItemrequestStatus().equals("Not Sold")) {
+                if (itemSetGet.getItemrequestStatus().equals("Not sold") && itemSetGet.getNotificationStatus().equals("Unread")) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(Notifications.this);
                     View viewChat = LayoutInflater.from(Notifications.this).inflate(R.layout.confirm_notification, null);
@@ -186,7 +186,7 @@ public class Notifications extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
-                            sendNotification(itemSetGet, "Decline");
+                            sendNotification(itemSetGet, "Declined");
                         }
                     });
                     accept.setOnClickListener(new View.OnClickListener() {
@@ -202,7 +202,11 @@ public class Notifications extends AppCompatActivity {
                     dialog.show();
                     dialog.setCancelable(false);
                 }else{
-                    Toast.makeText(Notifications.this, "Material already sold!", Toast.LENGTH_SHORT).show();
+                    if (itemSetGet.getNotificationStatus().equals("Accepted")) {
+                        Toast.makeText(Notifications.this, "Material already sold!", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(Notifications.this, "your previous request was declined! consider requesting again!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -241,8 +245,10 @@ public class Notifications extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         String currentdate = DateFormat.getInstance().format(calendar.getTime());
                         DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
-                                .child(getIntent().getStringExtra("ownerID")).push();
-                        uploadNotification.child("Notification Status").setValue("Unread");
+                                .child(itemSetGet.getCollectorID()).push();
+                        uploadNotification.child("Notification Title").setValue(title);
+                        uploadNotification.child("Notification Message").setValue(body);
+                        uploadNotification.child("Notification Status").setValue(received);
                         uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
