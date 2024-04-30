@@ -194,7 +194,6 @@ public class MaterialRequest extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String token=snapshot.child("FCM Token").getValue(String.class);
-                            fcmToken=token;
                             User user1=new User("any",token+"");
                             sendNotification(user1,token);
                         }
@@ -223,6 +222,22 @@ public class MaterialRequest extends AppCompatActivity {
 
     }
     private  void sendNotification(User user, String token){
+        progressDialog.show();
+        DatabaseReference userr=FirebaseDatabase.getInstance().getReference().child("All Users")
+                .child(FirebaseAuth.getInstance().getUid()).child("Details");
+        userr.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String token = snapshot.child("FCM Token").getValue(String.class);
+                fcmToken = token;
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            progressDialog.dismiss();
+            }
+        });
         String fullname=getIntent().getStringExtra("ownername");
         String[] name=fullname.split(" ");
         String title ="From: "+ getIntent().getStringExtra("username");

@@ -80,6 +80,7 @@ public class Notifications extends AppCompatActivity {
                         String matName=dataSnapshot.child("Item Name").getValue(String.class);
                         String matType=dataSnapshot.child("Item Type").getValue(String.class);
                         String collecNo=dataSnapshot.child("Collector").getValue(String.class);
+                        String collector_id=dataSnapshot.child("CollectorID").getValue(String.class);
                         String fcmt=dataSnapshot.child("Collector FCM Token").getValue(String.class);
                         String notID=dataSnapshot.getKey().toString();
                         Collector_FCM_Token=fcmt+"";
@@ -88,7 +89,7 @@ public class Notifications extends AppCompatActivity {
                         Item_Type=matType+"";
                         Collector_name=collecNo+"";
                         itemInNotificationID=iemInNotID;
-                        NotificationSetGet notificationSetGet=new NotificationSetGet(title,message,status,time);
+                        NotificationSetGet notificationSetGet=new NotificationSetGet(title,message,status,time,collector_id,collecNo,fcmt,);
                         notificationlist.add(notificationSetGet);
                     }
                     adapter.updateData(notificationlist);
