@@ -73,6 +73,11 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
         adapter.setOnItemLongClickListener(Notifications.this);
         handler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(Notifications.this);
+        handler.post(() -> {
+            progressDialog = new ProgressDialog(Notifications.this);
+            progressDialog.setMessage("Please wait.....Make sure you have a stable internet connection!");
+            progressDialog.setCancelable(false);
+        });
         adapter.setOnItemLongClickListener(new NotificationAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(int position, NotificationSetGet itemSetGet) {
@@ -89,7 +94,32 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        progressDialog.show();
+                        dialog.dismiss();
+                        DatabaseReference deleteNotification= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                                .child(FirebaseAuth.getInstance().getUid().toString()).child(itemSetGet.getNotificationID());
+                        deleteNotification.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()){
+                                    deleteNotification.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(Notifications.this, "deleted successfully!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }else {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(Notifications.this, "Notification already deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(Notifications.this, "Try again!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
                 builder.setView(viewChat);
@@ -100,11 +130,7 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
             }
         });
 
-        handler.post(() -> {
-            progressDialog = new ProgressDialog(Notifications.this);
-            progressDialog.setMessage("Please wait.....Make sure you have a stable internet connection!");
-            progressDialog.setCancelable(false);
-        });
+
         DatabaseReference uploadNotification= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
                 .child(FirebaseAuth.getInstance().getUid().toString());
         uploadNotification.addValueEventListener(new ValueEventListener() {
@@ -231,9 +257,13 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                     dialog.setCancelable(false);
                 }else{
                     if (itemSetGet.getNotificationStatus().equals("Accepted")) {
-                        Toast.makeText(Notifications.this, "Material already sold!", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(Notifications.this, "your previous request was declined! consider requesting again!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
+                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())) {
+                        Toast.makeText(Notifications.this, "you already sold this! hold to delete!", Toast.LENGTH_LONG).show();
+
+                    }else
+                    {
+                        Toast.makeText(Notifications.this, "your previous request was declined! consider requesting again! or hold to delete this notification", Toast.LENGTH_LONG).show();
                     }
                 }
             }
