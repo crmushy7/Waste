@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +59,8 @@ public class Notifications extends AppCompatActivity {
     NotificationAdapter adapter;
     private ViewPager viewPager;
     AlertDialog dialog;
+    Handler handler;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +69,14 @@ public class Notifications extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(Notifications.this));
         adapter=new NotificationAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
+        handler = new Handler(Looper.getMainLooper());
+        progressDialog = new ProgressDialog(Notifications.this);
+
+        handler.post(() -> {
+            progressDialog = new ProgressDialog(Notifications.this);
+            progressDialog.setMessage("Please wait.....Make sure you have a stable internet connection!");
+            progressDialog.setCancelable(false);
+        });
         DatabaseReference uploadNotification= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
                 .child(FirebaseAuth.getInstance().getUid().toString());
         uploadNotification.addValueEventListener(new ValueEventListener() {
@@ -185,7 +198,7 @@ public class Notifications extends AppCompatActivity {
         String fullname=itemSetGet.getCollectorName();
         String[] name=fullname.split(" ");
         String title ="From: "+ UserDetails.getFullName();
-        String body = name[0]+", Your requested material("+itemSetGet.getItemName()+") was "+received+!";
+        String body = name[0]+", Your requested material("+itemSetGet.getItemName()+") was "+received+"!";
 
         if(title.isEmpty()){
 
@@ -221,7 +234,7 @@ public class Notifications extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 progressDialog.dismiss();
-                                Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(Notifications.this, "The owner was notified!", Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -236,7 +249,7 @@ public class Notifications extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(MaterialRequest.this, "Owner not notified! try again later", Toast.LENGTH_LONG).show();
+                Toast.makeText(Notifications.this, "Owner not notified! try again later", Toast.LENGTH_LONG).show();
                 Log.d("error",t+"");
             }
         });
