@@ -52,7 +52,7 @@ public class Notifications extends AppCompatActivity {
 
     private List<NotificationSetGet> notificationlist=new ArrayList<>();
     RecyclerView recyclerView;
-    public static String notificationID="",itemInNotificationID="",Item_Name="",Item_Type="",Collector_name="",Collector_FCM_Token="";
+    public static String notificationID="",itemInNotificationID="",Item_Name="",Item_Type="",Collector_number="",Collector_name="",Collector_FCM_Token="";
     NotificationAdapter adapter;
     private ViewPager viewPager;
     AlertDialog dialog;
@@ -84,12 +84,7 @@ public class Notifications extends AppCompatActivity {
                         String collector_id=dataSnapshot.child("CollectorID").getValue(String.class);
                         String fcmt=dataSnapshot.child("Collector FCM Token").getValue(String.class);
                         String notID=dataSnapshot.getKey().toString();
-                        Collector_FCM_Token=fcmt+"";
-                        notificationID=notID;
-                        Item_Name=matName+"";
-                        Item_Type=matType+"";
-                        Collector_name=collecName+"";
-                        itemInNotificationID=iemInNotID;
+
                         NotificationSetGet notificationSetGet=new NotificationSetGet(title,message,status,time,collector_id,collecNo,fcmt,matType,matName,notID,iemInNotID,collecName,itemRequestStatus);
                         notificationlist.add(notificationSetGet);
                     }
@@ -121,16 +116,16 @@ public class Notifications extends AppCompatActivity {
                 TextView materialName2=viewChat.findViewById(R.id.nt_itemName2);
                 TextView materialCollector=viewChat.findViewById(R.id.nt_itemCollector);
                 TextView collectorPhone=viewChat.findViewById(R.id.collectorNumber);
-                materialCollector.setText(Collector_name);
-                materialName1.setText(Item_Name);
-                materialName2.setText(Item_Name);
-                materialType.setText(Item_Type);
-                collectorPhone.setText(Collector_name);
-                String PHONE_NUMBER=collectorPhone.getText().toString();
+                materialCollector.setText(itemSetGet.getCollectorName());
+                materialName1.setText(itemSetGet.getItemName());
+                materialName2.setText(itemSetGet.getItemName());
+                materialType.setText(itemSetGet.getItemType());
+                collectorPhone.setText(itemSetGet.getCollectorPhone());
+                String PHONE_NUMBER=itemSetGet.getCollectorPhone();
 
                 // Retrieve the DatabaseReference for the specific item pics
                 DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
-                        .child("Uploads").child(itemInNotificationID).child("ImageUrls");
+                        .child("Uploads").child(itemSetGet.getItemID()).child("ImageUrls");
 
 // Add a ValueEventListener to fetch the image URLs
                 itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
