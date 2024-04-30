@@ -66,7 +66,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (mLongListener = null){
+                if (mLongListener != null){
                     mLongListener.onItemLongClick(position,item);
                 }
                 return false;

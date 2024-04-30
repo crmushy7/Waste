@@ -76,6 +76,26 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
         adapter.setOnItemLongClickListener(new NotificationAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(int position, NotificationSetGet itemSetGet) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Notifications.this);
+                View viewChat = LayoutInflater.from(Notifications.this).inflate(R.layout.delete_notification, null);
+                Button cancelbtn = viewChat.findViewById(R.id.cancelNotification);
+                Button deletebtn = viewChat.findViewById(R.id.deleteNotification);
+                cancelbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                deletebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                builder.setView(viewChat);
+                dialog = builder.create();
+                dialog.show();
+                dialog.setCancelable(false);
 
             }
         });
