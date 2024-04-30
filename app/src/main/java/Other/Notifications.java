@@ -79,7 +79,8 @@ public class Notifications extends AppCompatActivity {
                         String iemInNotID=dataSnapshot.child("ItemID").getValue(String.class);
                         String matName=dataSnapshot.child("Item Name").getValue(String.class);
                         String matType=dataSnapshot.child("Item Type").getValue(String.class);
-                        String collecNo=dataSnapshot.child("Collector").getValue(String.class);
+                        String collecName=dataSnapshot.child("Collector").getValue(String.class);
+                        String itemRequestStatus=dataSnapshot.child("Request Status").getValue(String.class);
                         String collector_id=dataSnapshot.child("CollectorID").getValue(String.class);
                         String fcmt=dataSnapshot.child("Collector FCM Token").getValue(String.class);
                         String notID=dataSnapshot.getKey().toString();
@@ -87,9 +88,9 @@ public class Notifications extends AppCompatActivity {
                         notificationID=notID;
                         Item_Name=matName+"";
                         Item_Type=matType+"";
-                        Collector_name=collecNo+"";
+                        Collector_name=collecName+"";
                         itemInNotificationID=iemInNotID;
-                        NotificationSetGet notificationSetGet=new NotificationSetGet(title,message,status,time,collector_id,collecNo,fcmt,);
+                        NotificationSetGet notificationSetGet=new NotificationSetGet(title,message,status,time,collector_id,collecNo,fcmt,matType,matName,notID,iemInNotID,collecName,itemRequestStatus);
                         notificationlist.add(notificationSetGet);
                     }
                     adapter.updateData(notificationlist);

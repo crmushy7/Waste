@@ -282,6 +282,7 @@ public class MaterialRequest extends AppCompatActivity {
                         uploadNotification.child("Item Name").setValue(getIntent().getStringExtra("itemtitle1"));
                         uploadNotification.child("Item Type").setValue(getIntent().getStringExtra("itemtype"));
                         uploadNotification.child("Collector FCM Token").setValue(fcmToken);
+                        uploadNotification.child("Request Status").setValue("Not sold");
                         uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
