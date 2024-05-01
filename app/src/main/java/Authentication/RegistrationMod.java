@@ -305,7 +305,7 @@ public class RegistrationMod extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            progressDialog.dismiss();
+
 
 
                             Toast.makeText(RegistrationMod.this, "Success", Toast.LENGTH_SHORT).show();
@@ -327,6 +327,7 @@ public class RegistrationMod extends AppCompatActivity {
                                                 login.setVisibility(View.VISIBLE);
                                                 Passw.setVisibility(View.GONE);
                                                 header.setText("Sign in");
+                                                progressDialog.dismiss();
                                             } else {
                                                 Toast.makeText(RegistrationMod.this, "Failed", Toast.LENGTH_SHORT).show();
                                                 progressDialog.dismiss();

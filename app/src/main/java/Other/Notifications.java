@@ -239,6 +239,7 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
+                            progressDialog.show();
                             sendNotification(itemSetGet, "Declined");
                         }
                     });
@@ -355,7 +356,13 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             if (snapshot.exists()){
-                                                modifyNotification.child("Notification Status").setValue(received);
+                                                modifyNotification.child("Notification Status").setValue(received).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        updateNotificationStatus(itemSetGet,received);
+                                                    }
+                                                });
+
                                             }
                                         }
 
@@ -365,12 +372,6 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                                         }
                                     });
                                 }
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.dismiss();
-                                Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -398,5 +399,38 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
         Toast.makeText(this, "Item long clicked at position " + position, Toast.LENGTH_SHORT).show();
 
         // Perform navigation or any other action based on long click
+    }
+    public void updateNotificationStatus(NotificationSetGet itemSetGet,String received){
+        DatabaseReference uploadNotification1= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                .child(FirebaseAuth.getInstance().getUid().toString());
+        uploadNotification1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    Toast.makeText(Notifications.this, "jjjjjj", Toast.LENGTH_SHORT).show();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        String iemInNotID=dataSnapshot.child("ItemID").getValue(String.class);
+                        String notID=dataSnapshot.getKey().toString();
+                        String collector_id=dataSnapshot.child("CollectorID").getValue(String.class);
+                        if (notID != null && collector_id != null){
+                            if (iemInNotID.equals(itemSetGet.getItemID())&&collector_id.equals(itemSetGet.getCollectorID())){
+                                uploadNotification1.child(notID).child("Notification Status").setValue(received);
+                            }
+                        }
+
+                    }
+                    progressDialog.dismiss();
+                    Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
+                }else{
+                    progressDialog.dismiss();
+                    Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Notifications.this, "failed due to "+error+"", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
