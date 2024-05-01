@@ -288,16 +288,12 @@
                     android:gravity="center"
                     android:background="@drawable/layout_bg"
                     android:orientation="vertical">
-                    <androidx.cardview.widget.CardView
+                    <fragment
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:cardCornerRadius="10sp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="fitXY"
-                            android:src="@drawable/nearby_map"/>
-                    </androidx.cardview.widget.CardView>
+                        android:layout_height="400sp"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:id="@+id/mapID"
+
 
 
                 </LinearLayout>

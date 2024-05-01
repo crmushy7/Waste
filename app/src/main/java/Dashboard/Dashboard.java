@@ -25,6 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.wmeaapp.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,12 +50,13 @@ import Other.Notifications;
 import UserProfile.UserDetails;
 import UserProfile.Userprofile;
 
-public class Dashboard extends AppCompatActivity {
+public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final long TIME_INTERVAL = 200000; // Time interval for double press in milliseconds
     private long mBackPressed;
     ImageView notificationicon;
     AlertDialog dialog;
+    private GoogleMap gMap;
     public static Context context;
 
 
@@ -60,6 +67,8 @@ public class Dashboard extends AppCompatActivity {
         UserDetails.init(getApplicationContext());
         context=Dashboard.this;
 
+        SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapID);
+        mapFragment.getMapAsync(this);
 
 
         LinearLayout profileBtn = findViewById(R.id.ll_profileBtn);
@@ -229,6 +238,14 @@ public class Dashboard extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+    @Override
+    public void onMapReady(GoogleMap map) {
+        LatLng location=new LatLng(6.3690, 34.8888);
+        map.addMarker(new MarkerOptions().position(location).title("Tanzania"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location,12));
+
+        // Customize your map settings or add markers, etc.
     }
 
 
