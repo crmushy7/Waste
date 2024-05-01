@@ -3,13 +3,19 @@ package Dashboard;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -24,13 +30,28 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.wmeaapp.ChatBotActivity;
 import com.example.wmeaapp.R;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Looper;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,6 +79,8 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     AlertDialog dialog;
     private GoogleMap gMap;
     public static Context context;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+
 
 
     @Override
@@ -72,12 +95,19 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
 
 
         LinearLayout profileBtn = findViewById(R.id.ll_profileBtn);
+        LinearLayout chatbot = findViewById(R.id.ll_chatbot);
         RelativeLayout uploadBtn = findViewById(R.id.rl_uploadButton);
         LinearLayout viewPagePlastic = findViewById(R.id.ll_plasticBtn);
         LinearLayout viewPagemetal = findViewById(R.id.ll_metalBtn);
         LinearLayout viewPagewood = findViewById(R.id.ll_woodBtn);
         TextView displayUsername = findViewById(R.id.displayUserName);
         notificationicon=findViewById(R.id.notificationIcon);
+        chatbot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Dashboard.this, ChatBotActivity.class));
+            }
+        });
         notificationicon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +128,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Toast.makeText(Dashboard.this, "Chatbot coming soon!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Dashboard.this, ChatBotActivity.class));
             }
         });
 
@@ -241,12 +271,57 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     }
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng location=new LatLng(6.3690, 34.8888);
-        map.addMarker(new MarkerOptions().position(location).title("Tanzania"));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location,12));
+        // Check if location permissions are granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Get the last known location from the location manager
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        // Customize your map settings or add markers, etc.
+            // If a last known location is available, pin it on the map
+            // Check if the last known location is available
+            if (lastKnownLocation != null) {
+                LatLng currentLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                map.addMarker(new MarkerOptions().position(currentLocation).title("My Location"));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+            } else {
+                // Last known location is unknown, request the current device location
+                LocationRequest locationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//                        .setInterval(10000) // Update interval in milliseconds
+//                        .setFastestInterval(5000); // Fastest update interval in milliseconds
+
+                // Create a location callback
+                LocationCallback locationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        if (locationResult != null) {
+                            Location currentLocation = locationResult.getLastLocation();
+                            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            map.addMarker(new MarkerOptions().position(latLng).title("My Location"));
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+                        }
+                    }
+                };
+
+                // Request location updates
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+
+                // Handle the case where no last known location is available
+                Toast.makeText(this, "Last known location is unknown. Retrieving current location...", Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            // Request location permissions if not granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
     }
+
 
 
 

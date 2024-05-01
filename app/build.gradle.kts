@@ -57,6 +57,12 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("androidx.core:core-ktx:1.7.0")
     implementation ("com.google.android.gms:play-services-maps:18.0.0")
+    implementation ("com.google.android.gms:play-services-location:18.0.0")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+    implementation("com.google.guava:guava:31.0.1-android")
+    implementation("org.reactivestreams:reactive-streams:1.0.4")
+
 
 
 
