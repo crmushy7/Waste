@@ -52,7 +52,7 @@ public class ChatBotActivity extends AppCompatActivity {
         llm.setStackFromEnd(true);
         recyclerView.setLayoutManager(llm);
 
-        addResponse("Hi,how can i assist you?");
+
     }
 
     private void sendMessage() {
