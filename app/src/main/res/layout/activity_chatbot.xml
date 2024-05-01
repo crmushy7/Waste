@@ -28,6 +28,7 @@
             android:id="@+id/message_edt_text"
             android:layout_centerInParent="true"
             android:hint="Write here"
+            android:textColorHint="@color/black"
             android:background="@drawable/user_bot_input_rounded_corner"
             android:padding="16sp"
             android:textColor="@color/black"

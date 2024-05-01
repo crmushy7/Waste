@@ -44,6 +44,13 @@
             android:name="Other.FAQ"
             android:clearTaskOnLaunch="true"
             android:exported="false" />
+
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".ChatBotActivity"
+            android:clearTaskOnLaunch="true"
+            android:exported="false" />
+
         <activity
             android:screenOrientation="portrait"
             android:name="Other.AboutUs"

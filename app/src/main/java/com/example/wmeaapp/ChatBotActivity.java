@@ -9,7 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.ai.client.generativeai.GenerativeModel;
+import com.google.ai.client.generativeai.java.GenerativeModelFutures;
+import com.google.ai.client.generativeai.type.Content;
+import com.google.ai.client.generativeai.type.GenerateContentResponse;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +51,8 @@ public class ChatBotActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(ChatBotActivity.this);
         llm.setStackFromEnd(true);
         recyclerView.setLayoutManager(llm);
+
+        addResponse("Hi,how can i assist you?");
     }
 
     private void sendMessage() {
@@ -92,7 +100,7 @@ public class ChatBotActivity extends AppCompatActivity {
                 .build();
 
 
-        ListenableFuture < GenerateContentResponse > response = model.generateContent(content);
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
         Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
             @Override
             public void onSuccess(GenerateContentResponse result) {
