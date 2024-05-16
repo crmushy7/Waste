@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +45,9 @@ import Dashboard.Dashboard;
 import Items.MaterialRequest;
 import Notification.Api;
 import Notification.User;
+import Service.AdController;
 import UserProfile.UserDetails;
+import UserProfile.Userprofile;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,10 +65,16 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
     AlertDialog dialog;
     Handler handler;
     ProgressDialog progressDialog;
+    LinearLayout container;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
+        AdController.initAd(getApplicationContext());
+
+
+        container = findViewById(R.id.banner_layout);
+        AdController.largeBannerAd(Notifications.this,container);
         recyclerView=findViewById(R.id.notification_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(Notifications.this));
         adapter=new NotificationAdapter(new ArrayList<>());
@@ -330,6 +339,7 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                                                             if (snapshot.exists()){
                                                                 modifyNotification.child("Request Status").setValue("Sold");
                                                                 modifyNotification.child("Notification Status").setValue(received);
+                                                                progressDialog.dismiss();
                                                             }else{
                                                                 progressDialog.dismiss();
                                                             }
@@ -377,6 +387,7 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
 
                     }catch (Exception e) {
                         e.printStackTrace();
+                        progressDialog.dismiss();
                     }
                 }else{
                     progressDialog.dismiss();
@@ -407,7 +418,6 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
-                    Toast.makeText(Notifications.this, "jjjjjj", Toast.LENGTH_SHORT).show();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                         String iemInNotID=dataSnapshot.child("ItemID").getValue(String.class);
                         String notID=dataSnapshot.getKey().toString();
@@ -421,9 +431,12 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                     }
                     progressDialog.dismiss();
                     Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(Notifications.this, Dashboard.class));
                 }else{
                     progressDialog.dismiss();
                     Toast.makeText(Notifications.this, "Notification sent!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(Notifications.this, Dashboard.class));
+
                 }
             }
 

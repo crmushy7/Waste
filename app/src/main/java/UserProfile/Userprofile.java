@@ -47,6 +47,7 @@ import Items.UploadPage;
 import Other.AboutUs;
 import Other.FAQ;
 import Other.Notifications;
+import Service.AdController;
 
 public class Userprofile extends AppCompatActivity {
 
@@ -56,10 +57,16 @@ public class Userprofile extends AppCompatActivity {
     Handler handler;
     ProgressDialog progressDialog;
     public static TextView userName,userphone;
+    LinearLayout container;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userprofile);
+        AdController.initAd(getApplicationContext());
+
+
+        container = findViewById(R.id.banner_layout);
+        AdController.largeBannerAd(Userprofile.this,container);
         RelativeLayout uploadBtn=findViewById(R.id.rl_uploadButton);
         LinearLayout homeBtn=findViewById(R.id.up_home_navigation);
         LinearLayout logOutbtn=findViewById(R.id.up_logoutbtn);

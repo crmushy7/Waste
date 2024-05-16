@@ -410,8 +410,7 @@ public class RegistrationMod extends AppCompatActivity {
                     // Store user data locally using SharedPreferences
                     storeUserDataLocally(fullName, phoneNumber, email,password,FCM_Token);
 
-                    // Proceed to main app functionality (e.g., dashboard)
-                    startMainActivity();
+
                 } else {
                     // Handle case where user data doesn't exist
                     Toast.makeText(RegistrationMod.this, "User data not found", Toast.LENGTH_SHORT).show();
@@ -442,6 +441,8 @@ public class RegistrationMod extends AppCompatActivity {
 
         // Commit the changes
         editor.apply();
+        // Proceed to main app functionality (e.g., dashboard)
+        startMainActivity();
     }
 
     private void startMainActivity() {

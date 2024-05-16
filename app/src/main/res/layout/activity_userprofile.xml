@@ -415,6 +415,8 @@
                             </LinearLayout>
                         </LinearLayout>
 
+                            <LinearLayout  android:layout_width="match_parent" android:layout_height="60sp" android:orientation="horizontal" android:layout_centerHorizontal="true" android:layout_marginTop="20sp" android:id="@+id/banner_layout"> </LinearLayout>
+
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>
