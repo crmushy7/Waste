@@ -11,7 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 
 import Dashboard.Dashboard;
 import Items.MaterialRequest;

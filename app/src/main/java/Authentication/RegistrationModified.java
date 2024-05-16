@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 
 public class RegistrationModified extends AppCompatActivity {
 

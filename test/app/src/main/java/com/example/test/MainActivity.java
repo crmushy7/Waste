@@ -1,4 +1,4 @@
-package com.example.test;
+package com.crmushi.test;
 
 import androidx.appcompat.app.AppCompatActivity;
 

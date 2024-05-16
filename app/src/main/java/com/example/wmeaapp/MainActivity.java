@@ -1,4 +1,4 @@
-package com.example.wmeaapp;
+package com.crmushi.wmeaapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 

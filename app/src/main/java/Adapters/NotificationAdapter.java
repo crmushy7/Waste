@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 
 import java.util.List;
 

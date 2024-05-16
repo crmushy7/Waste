@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -545,7 +545,7 @@ public class ViewPage extends AppCompatActivity {
 
     private void searchMaterialDescription(String query) {
         DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference().child("Uploads");
-
+ 
         itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -620,7 +620,7 @@ public class ViewPage extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_MATERIAL_REQUEST && resultCode == RESULT_OK) {
             // Handle the result from MaterialRequest activity if needed
-            // For example, you can perform any actions or updates required
+            // For crmushi, you can perform any actions or updates required
             // in the ViewPage activity based on the result from MaterialRequest activity.
             // This block will execute when MaterialRequest activity finishes successfully.
         }

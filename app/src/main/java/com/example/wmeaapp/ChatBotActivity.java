@@ -1,4 +1,4 @@
-package com.example.wmeaapp;
+package com.crmushi.wmeaapp;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

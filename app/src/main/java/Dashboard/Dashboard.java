@@ -7,6 +7,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -30,8 +35,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.wmeaapp.ChatBotActivity;
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.ChatBotActivity;
+import com.crmushi.wmeaapp.R;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -68,6 +73,7 @@ import Adapters.ItemsAdapter;
 import Items.UploadPage;
 import Items.ViewPage;
 import Other.Notifications;
+import Service.AdController;
 import UserProfile.UserDetails;
 import UserProfile.Userprofile;
 
@@ -82,6 +88,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
 
+    LinearLayout container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +96,11 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
         setContentView(R.layout.activity_dashboard);
         UserDetails.init(getApplicationContext());
         context=Dashboard.this;
+        AdController.initAd(getApplicationContext());
+
+
+        container = findViewById(R.id.banner_layout);
+        AdController.largeBannerAd(Dashboard.this,container);
 
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapID);
         mapFragment.getMapAsync(this);

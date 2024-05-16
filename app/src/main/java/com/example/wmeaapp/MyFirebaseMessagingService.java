@@ -1,4 +1,4 @@
-package com.example.wmeaapp;
+package com.crmushi.wmeaapp;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,7 +7,7 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

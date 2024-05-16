@@ -305,6 +305,8 @@
 <!--    bottom nav-->
 
 
+    <RelativeLayout android:id="@+id/banner1" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:gravity="center">
+        <LinearLayout  android:layout_width="match_parent" android:layout_height="20sp" android:orientation="horizontal" android:layout_centerHorizontal="true" android:layout_marginTop="20dp" android:id="@+id/banner_layout"> </LinearLayout>    </RelativeLayout>
     <LinearLayout
         android:id="@+id/bottomll"
         android:layout_width="match_parent"

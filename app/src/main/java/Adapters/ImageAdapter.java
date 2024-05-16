@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import android.net.Uri;
 import android.widget.TextView;
 
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.wmeaapp"
+    namespace = "com.crmushi.wmeaapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.wmeaapp"
+        applicationId = "com.crmushi.wmeaapp"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
@@ -47,6 +47,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:21.5.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-messaging:23.4.1")
+    implementation("com.google.android.gms:play-services-ads-lite:23.1.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     implementation("com.github.bumptech.glide:glide:4.12.0")

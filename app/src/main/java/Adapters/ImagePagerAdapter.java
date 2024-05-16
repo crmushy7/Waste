@@ -14,7 +14,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.example.wmeaapp.R;
+import com.crmushi.wmeaapp.R;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

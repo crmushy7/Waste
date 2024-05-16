@@ -28,6 +28,10 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         >
 
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3798212441478713~9761993611"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDXe65LV0wWlF66xuGe2JdSgzlpjAYMy6I" />
