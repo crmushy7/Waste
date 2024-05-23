@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +33,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.crmushi.wmeaapp.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -85,6 +88,8 @@ public class UploadPage extends AppCompatActivity {
     public static String materialDescription;
     public static String materialUnit;
     public static String uploadDate;
+    public static String Latitude="";
+    public static String Longitude="";
     private static final long TIME_INTERVAL = 2000; // Time interval for double press in milliseconds
     private long mBackPressed;
     private RecyclerView recyclerView;
@@ -93,6 +98,8 @@ public class UploadPage extends AppCompatActivity {
     Handler handler;
     ProgressDialog progressDialog;
     EditText materialT,materialU;
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private FusedLocationProviderClient fusedLocationClient;
 
 
 
@@ -101,6 +108,14 @@ public class UploadPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
         handler=new Handler(Looper.getMainLooper());
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermission();
+        } else {
+            getCurrentLocation();
+        }
 
         handler.post(() -> {
             progressDialog = new ProgressDialog(UploadPage.this);
@@ -140,6 +155,10 @@ public class UploadPage extends AppCompatActivity {
                         materialUnit="No Unit";
                     }else{
                         materialUnit=mat_unit+"";
+                    }
+                    if (Longitude.isEmpty() || Latitude.isEmpty()){
+                        Toast.makeText(UploadPage.this, "Unable to get your location!", Toast.LENGTH_SHORT).show();
+                        return;
                     }
                     materialDescription=mat_title+"";
                     Calendar calendar=Calendar.getInstance();
@@ -342,13 +361,14 @@ public class UploadPage extends AppCompatActivity {
         DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
         DatabaseReference upload = databaseReferenceUpld.push();
         upload.child("Owner Name").setValue(getIntent().getStringExtra("name")+"");
-        upload.child("Owner Notification").setValue("iyumbu,Dodoma");
+        upload.child("Owner Location").setValue("iyumbu,Dodoma");
         upload.child("Owner Email").setValue(getIntent().getStringExtra("email")+"");
         upload.child("Owner PhoneNumber").setValue(getIntent().getStringExtra("pNumber")+"");
         upload.child("Upload Date").setValue(uploadDate);
         upload.child("Material Type").setValue(materialType);
         upload.child("Material Description").setValue(materialDescription);
         upload.child("Material Unit").setValue(materialUnit);
+        upload.child("Material Location").setValue(Latitude+","+Longitude);
         upload.child("Owner ID").setValue(FirebaseAuth.getInstance().getUid().toString());
 
         // Store all image URLs in a child node
@@ -374,5 +394,51 @@ public class UploadPage extends AppCompatActivity {
         }
         ;
 
+    }
+    private void getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            Location location = task.getResult();
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            // Use the latitude and longitude as needed
+                            Latitude=latitude+"";
+                            Longitude=longitude+"";
+                            Toast.makeText(UploadPage.this, "Lat: " + latitude + ", Lon: " + longitude, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(UploadPage.this, "Unable to get location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+    private void requestLocationPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_LOCATION_PERMISSION);
+    }
+
+    // Override onRequestPermissionsResult to handle the user's response
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation();
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

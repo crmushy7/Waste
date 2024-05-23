@@ -26,6 +26,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -68,8 +69,11 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import Adapters.ItemsAdapter;
+import Adapters.Material;
 import Items.UploadPage;
 import Items.ViewPage;
 import Other.Notifications;
@@ -86,6 +90,8 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap gMap;
     public static Context context;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private FusedLocationProviderClient fusedLocationClient;
+    private List<Material> materialList = new ArrayList<>();
 
 
     LinearLayout container;
@@ -104,6 +110,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
 
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapID);
         mapFragment.getMapAsync(this);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         LinearLayout profileBtn = findViewById(R.id.ll_profileBtn);
@@ -285,19 +292,19 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap map) {
         // Check if location permissions are granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Get the last known location from the location manager
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            // If a last known location is available, pin it on the map
-            // Check if the last known location is available
-            if (lastKnownLocation != null) {
-                LatLng currentLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                map.addMarker(new MarkerOptions().position(currentLocation).title("My Location"));
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
-                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
-            } else {
+//            // Get the last known location from the location manager
+//            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//            // If a last known location is available, pin it on the map
+//            // Check if the last known location is available
+//            if (lastKnownLocation != null) {
+//                LatLng currentLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+//                map.addMarker(new MarkerOptions().position(currentLocation).title("My Location"));
+//                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+//                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+//
+//            } else {
                 // Last known location is unknown, request the current device location
                 LocationRequest locationRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -315,6 +322,10 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                             map.addMarker(new MarkerOptions().position(latLng).title("My Location"));
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
                             map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                            Toast.makeText(Dashboard.this, currentLocation.getLatitude()+"", Toast.LENGTH_SHORT).show();
+                            Log.d("Latitude: ",""+currentLocation.getLatitude());
+                            Log.d("Longitude: ",""+currentLocation.getLongitude());
+                            fetchMaterialsAndMarkOnMap();
 
                         }
                     }
@@ -325,16 +336,53 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
 
                 // Handle the case where no last known location is available
-                Toast.makeText(this, "Last known location is unknown. Retrieving current location...", Toast.LENGTH_SHORT).show();
-            }
+                Toast.makeText(this, "Retrieving current location...", Toast.LENGTH_SHORT).show();
+//            }
 
         } else {
             // Request location permissions if not granted
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
+
     }
 
 
+    private void fetchMaterialsAndMarkOnMap() {
+        DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
+
+        databaseReferenceUpld.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                materialList.clear();  // Clear the list before adding new data
+                for (DataSnapshot materialSnapshot : dataSnapshot.getChildren()) {
+                    String materialLocation = materialSnapshot.child("Material Location").getValue(String.class);
+                    String materialDescription = materialSnapshot.child("Material Description").getValue(String.class);
+
+                    if (materialLocation != null && !materialLocation.isEmpty()) {
+                        String[] latLng = materialLocation.split(",");
+                        double latitude = Double.parseDouble(latLng[0]);
+                        double longitude = Double.parseDouble(latLng[1]);
+                        materialList.add(new Material(materialDescription, latitude, longitude));
+                    }
+                }
+
+                // After fetching all materials, add markers to the map
+                addMarkersOnMap();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(Dashboard.this, "Failed to load materials.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addMarkersOnMap() {
+        for (Material material : materialList) {
+            LatLng latLng = new LatLng(material.getLatitude(), material.getLongitude());
+            gMap.addMarker(new MarkerOptions().position(latLng).title(material.getDescription()));
+        }
+    }
 
 
 
