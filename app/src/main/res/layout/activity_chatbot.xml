@@ -6,15 +6,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:padding="8sp"
-    tools:context=".ChatBotActivity">
+    android:padding="8sp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:id="@+id/boat_recyclerView"
         android:layout_above="@+id/bottom_layout"
         tools:listitem="@layout/chat_item"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lottie_animation"
+        android:layout_above="@+id/bottom_layout">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="0sp"
+            android:layout_height="0sp"
+            android:layout_marginTop="36sp"
+            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/bot"
+
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,13 +55,10 @@
             android:id="@+id/message_edt_text"
             android:layout_centerInParent="true"
             android:hint="Write here"
-            android:textColorHint="@color/black"
             android:background="@drawable/user_bot_input_rounded_corner"
             android:padding="16sp"
             android:textColor="@color/black"
-            android:layout_toLeftOf="@+id/send_btn"
-            android:maxLines="5"
-            android:inputType="textMultiLine" />
+            android:layout_toLeftOf="@+id/send_btn"/>
 
         <ImageButton
             android:layout_width="48sp"
@@ -45,6 +69,7 @@
             android:layout_marginStart="10sp"
             android:src="@drawable/send_vector"
             android:background="@android:color/transparent"
+            android:contentDescription="btn"
             android:padding="8sp"/>
 
     </RelativeLayout>

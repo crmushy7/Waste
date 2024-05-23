@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wmeaapp.ChatBotActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -36,7 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crmushi.wmeaapp.ChatBotActivity;
+
 import com.crmushi.wmeaapp.R;
 import android.location.Location;
 import android.os.Bundle;
@@ -111,6 +112,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapID);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        materialList = new ArrayList<>();
 
 
         LinearLayout profileBtn = findViewById(R.id.ll_profileBtn);
@@ -292,25 +294,9 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap map) {
         // Check if location permissions are granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            // Get the last known location from the location manager
-//            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//
-//            // If a last known location is available, pin it on the map
-//            // Check if the last known location is available
-//            if (lastKnownLocation != null) {
-//                LatLng currentLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-//                map.addMarker(new MarkerOptions().position(currentLocation).title("My Location"));
-//                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
-//                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-//
-//            } else {
-                // Last known location is unknown, request the current device location
+
                 LocationRequest locationRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//                        .setInterval(10000) // Update interval in milliseconds
-//                        .setFastestInterval(5000); // Fastest update interval in milliseconds
-
                 // Create a location callback
                 LocationCallback locationCallback = new LocationCallback() {
                     @Override
@@ -319,13 +305,49 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                         if (locationResult != null) {
                             Location currentLocation = locationResult.getLastLocation();
                             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
                             map.addMarker(new MarkerOptions().position(latLng).title("My Location"));
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
                             map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                            Toast.makeText(Dashboard.this, currentLocation.getLatitude()+"", Toast.LENGTH_SHORT).show();
-                            Log.d("Latitude: ",""+currentLocation.getLatitude());
-                            Log.d("Longitude: ",""+currentLocation.getLongitude());
-                            fetchMaterialsAndMarkOnMap();
+                            DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
+
+                            databaseReferenceUpld.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                            String matLocation = dataSnapshot.child("Material Location").getValue(String.class);
+                                            String materialName=dataSnapshot.child("Material Description").getValue(String.class);
+                                            String ownerPhone=dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
+                                            Log.d("Location", matLocation);
+                                            String[] locBoth=matLocation.split(",");
+                                            double latitude=Double.parseDouble(locBoth[0]);
+                                            double longitude=Double.parseDouble(locBoth[1]);
+                                            Material material=new Material(materialName,latitude,longitude);
+                                            materialList.add(material);
+                                            LatLng latLng1 = new LatLng(latitude, longitude);
+                                            map.addMarker(new MarkerOptions()
+                                                    .position(latLng1)
+                                                    .title(materialName)
+                                                    .snippet("Owner Phone: " + ownerPhone)
+                                            );
+                                            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+                                        }
+
+                                        Log.d("Material",materialList+"");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+
+
+
 
                         }
                     }
@@ -350,40 +372,70 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     private void fetchMaterialsAndMarkOnMap() {
         DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
 
-        databaseReferenceUpld.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReferenceUpld.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                materialList.clear();  // Clear the list before adding new data
-                for (DataSnapshot materialSnapshot : dataSnapshot.getChildren()) {
-                    String materialLocation = materialSnapshot.child("Material Location").getValue(String.class);
-                    String materialDescription = materialSnapshot.child("Material Description").getValue(String.class);
-
-                    if (materialLocation != null && !materialLocation.isEmpty()) {
-                        String[] latLng = materialLocation.split(",");
-                        double latitude = Double.parseDouble(latLng[0]);
-                        double longitude = Double.parseDouble(latLng[1]);
-                        materialList.add(new Material(materialDescription, latitude, longitude));
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String matLocation = dataSnapshot.child("Material Location").getValue(String.class);
+                        String materialName=dataSnapshot.child("Material Description").getValue(String.class);
+                        Log.d("Location", matLocation);
+                        String[] locBoth=matLocation.split(",");
+                        double latitude=Double.parseDouble(locBoth[0]);
+                        double longitude=Double.parseDouble(locBoth[1]);
+                        Material material=new Material(materialName,latitude,longitude);
+                        materialList.add(material);
                     }
+                    addMarkers(materialList);
+                    Log.d("Material",materialList+"");
                 }
-
-                // After fetching all materials, add markers to the map
-                addMarkersOnMap();
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(Dashboard.this, "Failed to load materials.", Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
+//        databaseReferenceUpld.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                materialList.clear();  // Clear the list before adding new data
+//                if ()
+////                for (DataSnapshot materialSnapshot : dataSnapshot.getChildren()) {
+////                    String materialLocation = materialSnapshot.child("Material Location").getValue(String.class);
+////                    String materialDescription = materialSnapshot.child("Material Description").getValue(String.class);
+////
+////                    Log.d(materialDescription+"",materialLocation+"");
+////                    if (materialLocation != null && !materialLocation.isEmpty()) {
+////                        String[] latLng = materialLocation.split(",");
+////                        double latitude = Double.parseDouble(latLng[0]);
+////                        double longitude = Double.parseDouble(latLng[1]);
+////                        materialList.add(new Material(materialDescription, latitude, longitude));
+////                    }
+////                }
+//
+//                // After fetching all materials, add markers to the map
+////                addMarkersOnMap();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Toast.makeText(Dashboard.this, "Failed to load materials.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
-    private void addMarkersOnMap() {
-        for (Material material : materialList) {
-            LatLng latLng = new LatLng(material.getLatitude(), material.getLongitude());
-            gMap.addMarker(new MarkerOptions().position(latLng).title(material.getDescription()));
-        }
+//    private void addMarkersOnMap() {
+//        for (Material material : materialList) {
+//            LatLng latLng = new LatLng(material.getLatitude(), material.getLongitude());
+//            gMap.addMarker(new MarkerOptions().position(latLng).title(material.getDescription()));
+//        }
+//    }
+
+
+    private void addMarkers(List<Material> materialList){
+
     }
-
-
 
 }

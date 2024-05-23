@@ -88,6 +88,11 @@
             android:clearTaskOnLaunch="true"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.example.wmeaapp.ChatBotActivity"
+            android:exported="false"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="Dashboard.Dashboard"
             android:exported="false"
             android:clearTaskOnLaunch="true"

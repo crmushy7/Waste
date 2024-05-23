@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -255,6 +256,9 @@ public class UploadPage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d("request",requestCode+"");
+        Log.d("result",resultCode+"");
+        Log.d("data11",data+"");
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             if (data.getData() != null) {
                 // Single image selected
@@ -270,12 +274,16 @@ public class UploadPage extends AppCompatActivity {
             }
             adapter.notifyDataSetChanged();
             // Update UI to display selected images, e.g., add to a GridView or RecyclerView
+        } else if (requestCode == CAMERA_REQUEST && data.toString().trim().equals("Intent { act=inline-data flg=0x1 (has extras) }")) {
+            Toast.makeText(this, "Camera Error", Toast.LENGTH_SHORT).show();
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null) {
             // Handle camera pics
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             Uri imageUri = getImageUri(this, photo);
             imageUris.add(imageUri);
             adapter.notifyDataSetChanged(); // Update RecyclerView
+        }else{
+            Toast.makeText(this, resultCode+"", Toast.LENGTH_SHORT).show();
         }
     }
 
