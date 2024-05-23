@@ -60,6 +60,8 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
     private List<NotificationSetGet> notificationlist=new ArrayList<>();
     RecyclerView recyclerView;
     public static String itemSoldStatus="";
+    public static String notID="";
+    public static String notEx;
     NotificationAdapter adapter;
     private ViewPager viewPager;
     AlertDialog dialog;
@@ -182,102 +184,136 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
         adapter.setOnItemClickListener(new NotificationAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, NotificationSetGet itemSetGet) {
+                DatabaseReference notfctnExist=FirebaseDatabase.getInstance().getReference().child("Received Notifications").child(FirebaseAuth.getInstance().getUid()).child(itemSetGet.getNotificationID());
+                notfctnExist.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String itemid=snapshot.child("ItemID").getValue(String.class);
+                        notEx=itemid;
+                        if (notEx==null) {
+                            Toast.makeText(Notifications.this, "item sold! hold to delete", Toast.LENGTH_SHORT).show();
 
-                if (itemSetGet.getItemrequestStatus().equals("Not sold") && itemSetGet.getNotificationStatus().equals("Unread")) {
+                        }else {
+                            DatabaseReference itemexist = FirebaseDatabase.getInstance().getReference().child("Uploads").child(notEx + "");
+                            itemexist.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        if (itemSetGet.getItemrequestStatus().equals("Not sold") && itemSetGet.getNotificationStatus().equals("Unread")) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Notifications.this);
-                    View viewChat = LayoutInflater.from(Notifications.this).inflate(R.layout.confirm_notification, null);
-                    Button decline = viewChat.findViewById(R.id.declinebtn);
-                    Button accept = viewChat.findViewById(R.id.acceptbtn);
-                    TextView materialType = viewChat.findViewById(R.id.nt_itemType);
-                    TextView materialName1 = viewChat.findViewById(R.id.nt_itemname);
-                    TextView materialName2 = viewChat.findViewById(R.id.nt_itemName2);
-                    TextView materialCollector = viewChat.findViewById(R.id.nt_itemCollector);
-                    TextView collectorPhone = viewChat.findViewById(R.id.collectorNumber);
-                    TextView cancelbtn = viewChat.findViewById(R.id.cancelDialog);
-                    materialCollector.setText(itemSetGet.getCollectorName());
-                    materialName1.setText(itemSetGet.getItemName());
-                    materialName2.setText(itemSetGet.getItemName());
-                    materialType.setText(itemSetGet.getItemType());
-                    collectorPhone.setText(itemSetGet.getCollectorPhone() + "");
-                    String PHONE_NUMBER = collectorPhone.getText().toString();
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(Notifications.this);
+                                            View viewChat = LayoutInflater.from(Notifications.this).inflate(R.layout.confirm_notification, null);
+                                            Button decline = viewChat.findViewById(R.id.declinebtn);
+                                            Button accept = viewChat.findViewById(R.id.acceptbtn);
+                                            TextView materialType = viewChat.findViewById(R.id.nt_itemType);
+                                            TextView materialName1 = viewChat.findViewById(R.id.nt_itemname);
+                                            TextView materialName2 = viewChat.findViewById(R.id.nt_itemName2);
+                                            TextView materialCollector = viewChat.findViewById(R.id.nt_itemCollector);
+                                            TextView collectorPhone = viewChat.findViewById(R.id.collectorNumber);
+                                            TextView cancelbtn = viewChat.findViewById(R.id.cancelDialog);
+                                            materialCollector.setText(itemSetGet.getCollectorName());
+                                            materialName1.setText(itemSetGet.getItemName());
+                                            materialName2.setText(itemSetGet.getItemName());
+                                            materialType.setText(itemSetGet.getItemType());
+                                            collectorPhone.setText(itemSetGet.getCollectorPhone() + "");
+                                            String PHONE_NUMBER = collectorPhone.getText().toString();
 
-                    cancelbtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                        }
-                    });
+                                            cancelbtn.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
 
-                    // Retrieve the DatabaseReference for the specific item pics
-                    DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
-                            .child("Uploads").child(itemSetGet.getItemID()).child("ImageUrls");
+                                            // Retrieve the DatabaseReference for the specific item pics
+                                            DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
+                                                    .child("Uploads").child(itemSetGet.getItemID()).child("ImageUrls");
 
 // Add a ValueEventListener to fetch the image URLs
-                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            List<String> imageUrls = new ArrayList<>();
-                            // Iterate through the child nodes to get each image URL
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                String imageUrl = dataSnapshot.child("Image").getValue(String.class);
-                                imageUrls.add(imageUrl);
-                            }
-                            // Now you have the list of image URLs, you can use it to initialize your ViewPager
-                            viewPager = viewChat.findViewById(R.id.viewPager);
-                            ImagePagerAdapter adapter1 = new ImagePagerAdapter(Notifications.this, imageUrls, viewPager);
-                            viewPager.setAdapter(adapter1);
-                        }
+                                            itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    List<String> imageUrls = new ArrayList<>();
+                                                    // Iterate through the child nodes to get each image URL
+                                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                                        String imageUrl = dataSnapshot.child("Image").getValue(String.class);
+                                                        imageUrls.add(imageUrl);
+                                                    }
+                                                    // Now you have the list of image URLs, you can use it to initialize your ViewPager
+                                                    viewPager = viewChat.findViewById(R.id.viewPager);
+                                                    ImagePagerAdapter adapter1 = new ImagePagerAdapter(Notifications.this, imageUrls, viewPager);
+                                                    viewPager.setAdapter(adapter1);
+                                                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            // Handle errors here
-                        }
-                    });
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    // Handle errors here
+                                                }
+                                            });
 
 
-                    collectorPhone.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(Intent.ACTION_DIAL);
-                            intent.setData(Uri.parse("tel:" + PHONE_NUMBER));
-                            startActivity(intent);
-                        }
-                    });
-                    decline.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            progressDialog.show();
-                            sendNotification(itemSetGet, "Declined");
-                        }
-                    });
-                    accept.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            progressDialog.show();
-                            sendNotification(itemSetGet, "Accepted");
-                        }
-                    });
+                                            collectorPhone.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                                                    intent.setData(Uri.parse("tel:" + PHONE_NUMBER));
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                            decline.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+                                                    progressDialog.show();
+                                                    sendNotification(itemSetGet, "Declined");
+                                                }
+                                            });
+                                            accept.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+                                                    progressDialog.show();
+                                                    sendNotification(itemSetGet, "Accepted");
+                                                }
+                                            });
 
-                    builder.setView(viewChat);
-                    dialog = builder.create();
-                    dialog.show();
-                    dialog.setCancelable(false);
-                }else{
-                    if (itemSetGet.getNotificationStatus().equals("Accepted")) {
-                        Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
-                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())&& itemSetGet.getNotificationStatus().equals("Declined")) {
-                        Toast.makeText(Notifications.this, "you declined to sell this to "+itemSetGet.getCollectorName()+"! hold to delete!", Toast.LENGTH_LONG).show();
+                                            builder.setView(viewChat);
+                                            dialog = builder.create();
+                                            dialog.show();
+                                            dialog.setCancelable(false);
+                                        } else {
+                                            Toast.makeText(Notifications.this, "declined", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        if (itemSetGet.getNotificationStatus().equals("Accepted")) {
+                                            Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
+                                        } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString()) && itemSetGet.getNotificationStatus().equals("Declined")) {
+                                            Toast.makeText(Notifications.this, "you declined to sell this to " + itemSetGet.getCollectorName() + "! hold to delete!", Toast.LENGTH_LONG).show();
 
-                    } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString())&& itemSetGet.getNotificationStatus().equals("Accepted")) {
-                        Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        Toast.makeText(Notifications.this, "your previous request was declined! consider requesting again! or hold to delete this notification", Toast.LENGTH_LONG).show();
+                                        } else if (!itemSetGet.getCollectorID().equals(FirebaseAuth.getInstance().getUid().toString()) && itemSetGet.getNotificationStatus().equals("Accepted")) {
+                                            Toast.makeText(Notifications.this, "Material already sold! hold to delete this notification", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(Notifications.this, "Item already sold! hold to delete", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
             }
         });
     }
@@ -312,53 +348,104 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
+                        notID=itemSetGet.getNotificationID();
                         Calendar calendar = Calendar.getInstance();
                         String currentdate = DateFormat.getInstance().format(calendar.getTime());
                         DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
                                 .child(itemSetGet.getCollectorID()).push();
                         uploadNotification.child("Notification Title").setValue(title);
                         uploadNotification.child("Notification Message").setValue(body);
+                        uploadNotification.child("ItemID").setValue(itemSetGet.getItemID());
+                        uploadNotification.child("Notification Status").setValue(received);
+                        uploadNotification.child("Request Status").setValue("Not sold");
                         uploadNotification.child("Notification Status").setValue(received);
                         uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
                                 if (received.equals("Accepted")){
-                                    DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
-                                            .child("Uploads").child(itemSetGet.getItemID());
-                                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    DatabaseReference updtNotifications=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                                            .child(FirebaseAuth.getInstance().getUid());
+                                    updtNotifications.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            itemRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    DatabaseReference modifyNotification= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
-                                                            .child(FirebaseAuth.getInstance().getUid().toString()).child(itemSetGet.getNotificationID());
-                                                    modifyNotification.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            if (snapshot.exists()){
-                                                                modifyNotification.child("Request Status").setValue("Sold");
-                                                                modifyNotification.child("Notification Status").setValue(received);
-                                                                progressDialog.dismiss();
-                                                            }else{
-                                                                progressDialog.dismiss();
-                                                            }
-                                                        }
+                                            if (snapshot.exists()){
+                                                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                                    String itemId=dataSnapshot.child("ItemID").getValue(String.class);
+                                                    String notificationId=dataSnapshot.getKey();
+                                                    if (itemId.equals(itemSetGet.getItemID())){
+                                                        Toast.makeText(Notifications.this, itemSetGet.getItemID()+"", Toast.LENGTH_SHORT).show();
+                                                        DatabaseReference update=updtNotifications.child(itemSetGet.getNotificationID());
+                                                        update.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                if (!notificationId.equals(notID)){
+                                                                    update.child("Notification Status").setValue("Declined").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference()
+                                                                                    .child("Uploads").child(itemSetGet.getItemID());
+                                                                            itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                @Override
+                                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                                    if (snapshot.exists()) {
+                                                                                        itemRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void unused) {
+                                                                                                }
+                                                                                        });
+                                                                                    }
+                                                                                }
 
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError error) {
-                                                            progressDialog.dismiss();
-                                                        }
-                                                    });
+                                                                                @Override
+                                                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                                                    progressDialog.dismiss();
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+
+                                                                }else{
+                                                                    DatabaseReference modifyNotification = FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                                                                            .child(FirebaseAuth.getInstance().getUid().toString()).child(itemSetGet.getNotificationID());
+                                                                    modifyNotification.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                            if (snapshot.exists()) {
+                                                                                modifyNotification.child("Request Status").setValue("Sold");
+                                                                                modifyNotification.child("Notification Status").setValue(received);
+
+                                                                            } else {
+
+                                                                            }
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError error) {
+                                                                            progressDialog.dismiss();
+                                                                        }
+                                                                    });
+
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                                            }
+                                                        });
+
+                                                    }
                                                 }
-                                            });
+                                                progressDialog.dismiss();
+                                            }
                                         }
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
-                                            progressDialog.dismiss();
+
                                         }
                                     });
+
                                 }else{
                                     DatabaseReference modifyNotification= FirebaseDatabase.getInstance().getReference().child("Received Notifications")
                                             .child(FirebaseAuth.getInstance().getUid().toString()).child(itemSetGet.getNotificationID());

@@ -319,7 +319,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                                             String matLocation = dataSnapshot.child("Material Location").getValue(String.class);
                                             String materialName=dataSnapshot.child("Material Description").getValue(String.class);
                                             String ownerPhone=dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
-                                            Log.d("Location", matLocation);
+
                                             String[] locBoth=matLocation.split(",");
                                             double latitude=Double.parseDouble(locBoth[0]);
                                             double longitude=Double.parseDouble(locBoth[1]);
