@@ -1,4 +1,5 @@
 package Adapters;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -12,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.crmushi.wmeaapp.R;
 import java.util.List;
 import java.util.Timer;
@@ -39,7 +38,7 @@ public class ImagePagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return imageUrls.size();
+        return imageUrls != null ? imageUrls.size() : 0;
     }
 
     @NonNull
@@ -91,7 +90,7 @@ public class ImagePagerAdapter extends PagerAdapter {
                 if (longPressTimer != null) {
                     longPressTimer.cancel();
                     longPressTimer = null;
-                    isPaused=false;
+                    isPaused = false;
                     startAutoSlide();
                 }
             }
@@ -116,6 +115,18 @@ public class ImagePagerAdapter extends PagerAdapter {
         if (timer != null) {
             timer.cancel();
         }
+
+        // Initialize the runnable here to ensure imageUrls is checked
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (imageUrls != null && !imageUrls.isEmpty()) {
+                    int nextPosition = (viewPager.getCurrentItem() + 1) % imageUrls.size();
+                    viewPager.setCurrentItem(nextPosition, true);
+                }
+            }
+        };
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -125,14 +136,6 @@ public class ImagePagerAdapter extends PagerAdapter {
                 }
             }
         }, 3000, 3000);
-
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                int nextPosition = (viewPager.getCurrentItem() + 1) % imageUrls.size();
-                viewPager.setCurrentItem(nextPosition, true);
-            }
-        };
     }
 
     public void stopAutoSlide() {
@@ -141,4 +144,3 @@ public class ImagePagerAdapter extends PagerAdapter {
         }
     }
 }
-

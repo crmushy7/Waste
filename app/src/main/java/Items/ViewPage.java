@@ -98,58 +98,57 @@ public class ViewPage extends AppCompatActivity {
                 case "plastic":
                     plasticbtn.setBackgroundResource(R.drawable.card_bg);
                     plasticbtn.setTextColor(getResources().getColor(R.color.white));
-                    DatabaseReference itemRefPlastic= FirebaseDatabase.getInstance().getReference()
-                            .child("Uploads");
+
+                    DatabaseReference itemRefPlastic = FirebaseDatabase.getInstance().getReference().child("Uploads");
                     itemRefPlastic.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             List<ItemSetGet> itemSetGetsList = new ArrayList<>();
-                            for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                 String item_materialtype = dataSnapshot.child("Material Type").getValue(String.class);
-                                if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")){
+                                if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")) {
                                     String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                     String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                    String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                     String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                     String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
-                                    String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
-                                    String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
-                                    String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
-                                    String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
+                                    String item_materialtitle = dataSnapshot.child("Material Description").getValue(String.class);
+                                    String item_materialunit = dataSnapshot.child("Material Unit").getValue(String.class);
+                                    String item_loc = dataSnapshot.child("Location Name").getValue(String.class);
+                                    String owner_ID = dataSnapshot.child("Owner ID").getValue(String.class);
+
                                     // Get the first image URL from the ImageUrls child node
                                     String imageUrl = null;
-                                    DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls").getChildren().iterator().next();
-                                    if (imageUrlsSnapshot.exists()) {
-                                        imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
-                                    }                                    String itemID=dataSnapshot.getKey().toString();
+                                    DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls");
+                                    if (imageUrlsSnapshot.exists() && imageUrlsSnapshot.getChildren().iterator().hasNext()) {
+                                        imageUrl = imageUrlsSnapshot.getChildren().iterator().next().child("Image").getValue(String.class);
+                                    }
+
+                                    String itemID = dataSnapshot.getKey();
                                     // Create Item object with the details
-                                     ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
+                                    ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID, item_loc);
 
                                     itemSetGetsList.add(itemConstructor);
-
-                                }else {
                                 }
-
-
-
                             }
 
-                            adapter.updateData(itemSetGetsList);
+                            // Reverse the list before updating the adapter
                             Collections.reverse(itemSetGetsList);
-                            adapter.notifyDataSetChanged();
-//                        recyclerView.setAdapter(adapter);
 
+                            // Update the adapter on the main thread
+                            runOnUiThread(() -> {
+                                adapter.updateData(itemSetGetsList);
+                                adapter.notifyDataSetChanged();
+                            });
                         }
-
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-
+                            // Handle onCancelled event
                         }
                     });
-
                     break;
-                    case "metal":
+
+                case "metal":
                     metalbtn.setBackgroundResource(R.drawable.card_bg);
                     metalbtn.setTextColor(getResources().getColor(R.color.white));
                         DatabaseReference itemRefMetal= FirebaseDatabase.getInstance().getReference()
@@ -229,7 +228,8 @@ public class ViewPage extends AppCompatActivity {
                                         DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls").getChildren().iterator().next();
                                         if (imageUrlsSnapshot.exists()) {
                                             imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
-                                        }                                        String itemID=dataSnapshot.getKey().toString();
+                                        }
+                                        String itemID=dataSnapshot.getKey().toString();
                                         // Create Item object with the details
                                          ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
@@ -274,58 +274,56 @@ public class ViewPage extends AppCompatActivity {
                 woodbtn.setBackgroundResource(R.drawable.round_button);
                 woodbtn.setTextColor(getResources().getColor(R.color.blue_mod));
 
-                DatabaseReference itemRef= FirebaseDatabase.getInstance().getReference()
-                        .child("Uploads");
+                DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference().child("Uploads");
                 itemRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<ItemSetGet> itemSetGetsList = new ArrayList<>();
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             String item_materialtype = dataSnapshot.child("Material Type").getValue(String.class);
-                            if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")){
+                            if (item_materialtype != null && item_materialtype.equalsIgnoreCase("Plastic")) {
                                 String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                                 String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                                String owner_location = dataSnapshot.child("Owner Notification").getValue(String.class);
                                 String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
-                                String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
-                                String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
-                                String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
-                                String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
+                                String item_materialtitle = dataSnapshot.child("Material Description").getValue(String.class);
+                                String item_materialunit = dataSnapshot.child("Material Unit").getValue(String.class);
+                                String item_loc = dataSnapshot.child("Location Name").getValue(String.class);
+                                String owner_ID = dataSnapshot.child("Owner ID").getValue(String.class);
+
                                 // Get the first image URL from the ImageUrls child node
                                 String imageUrl = null;
-                                DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls").getChildren().iterator().next();
-                                if (imageUrlsSnapshot.exists()) {
-                                    imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
-                                }                                String itemID=dataSnapshot.getKey().toString();
+                                DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls");
+                                if (imageUrlsSnapshot.exists() && imageUrlsSnapshot.getChildren().iterator().hasNext()) {
+                                    imageUrl = imageUrlsSnapshot.getChildren().iterator().next().child("Image").getValue(String.class);
+                                }
+
+                                String itemID = dataSnapshot.getKey();
                                 // Create Item object with the details
-                                 ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
+                                ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID, item_loc);
 
                                 itemSetGetsList.add(itemConstructor);
-
-                            }else {
                             }
-
-
-
                         }
 
-                        adapter.updateData(itemSetGetsList);
+                        // Reverse the list before updating the adapter
                         Collections.reverse(itemSetGetsList);
-                        adapter.notifyDataSetChanged();
-//                        recyclerView.setAdapter(adapter);
 
+                        // Update the adapter on the main thread
+                        runOnUiThread(() -> {
+                            adapter.updateData(itemSetGetsList);
+                            adapter.notifyDataSetChanged();
+                        });
                     }
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        // Handle onCancelled event
                     }
                 });
-
             }
         });
+
         metalbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -474,52 +472,55 @@ public class ViewPage extends AppCompatActivity {
                 woodbtn.setBackgroundResource(R.drawable.round_button);
                 woodbtn.setTextColor(getResources().getColor(R.color.blue_mod));
 
-
-                DatabaseReference itemRef= FirebaseDatabase.getInstance().getReference().child("Uploads");
+                DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference().child("Uploads");
                 itemRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<ItemSetGet> itemSetGetsList = new ArrayList<>();
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             String owner_name = dataSnapshot.child("Owner Name").getValue(String.class);
                             String owner_email = dataSnapshot.child("Owner Email").getValue(String.class);
-                            String owner_location = dataSnapshot.child("Owner Location").getValue(String.class);
                             String owner_phonenumber = dataSnapshot.child("Owner PhoneNumber").getValue(String.class);
                             String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                             String item_materialtype = dataSnapshot.child("Material Type").getValue(String.class);
-                            String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
-                            String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
-                            String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
-                            String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
-                            String itemID=dataSnapshot.getKey().toString();
+                            String item_materialtitle = dataSnapshot.child("Material Description").getValue(String.class);
+                            String item_materialunit = dataSnapshot.child("Material Unit").getValue(String.class);
+                            String item_loc = dataSnapshot.child("Location Name").getValue(String.class);
+                            String owner_ID = dataSnapshot.child("Owner ID").getValue(String.class);
 
                             // Get the first image URL from the ImageUrls child node
                             String imageUrl = null;
-                            DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls").getChildren().iterator().next();
-                            if (imageUrlsSnapshot.exists()) {
-                                imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
+                            DataSnapshot imageUrlsSnapshot = dataSnapshot.child("ImageUrls");
+                            if (imageUrlsSnapshot.exists() && imageUrlsSnapshot.getChildren().iterator().hasNext()) {
+                                imageUrl = imageUrlsSnapshot.getChildren().iterator().next().child("Image").getValue(String.class);
                             }
 
+                            String itemID = dataSnapshot.getKey();
                             // Create Item object with the details
-                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
+                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID, item_loc);
+
                             itemSetGetsList.add(itemConstructor);
                         }
 
-                        adapter.updateData(itemSetGetsList);
+                        // Reverse the list before updating the adapter
                         Collections.reverse(itemSetGetsList);
-                        adapter.notifyDataSetChanged();
+
+                        // Update the adapter on the main thread
+                        runOnUiThread(() -> {
+                            adapter.updateData(itemSetGetsList);
+                            adapter.notifyDataSetChanged();
+                        });
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         // Handle onCancelled event
+
                     }
                 });
-
-
-
             }
         });
+
         back_to_dashboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
