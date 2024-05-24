@@ -196,6 +196,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0767164152"
+                        android:drawableLeft="@drawable/add_call"
+                        android:drawablePadding="5sp"
+                        android:textColor="@color/blue_mod"
                         android:textStyle="bold"
                         android:textSize="20sp"/>
                 </LinearLayout>

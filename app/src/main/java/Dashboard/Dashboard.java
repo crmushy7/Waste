@@ -20,12 +20,16 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,11 +71,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import Adapters.ItemsAdapter;
 import Adapters.Material;
@@ -93,6 +103,8 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private FusedLocationProviderClient fusedLocationClient;
     private List<Material> materialList = new ArrayList<>();
+    private LocationManager locationManager;
+    TextView locationText;
 
 
     LinearLayout container;
@@ -104,7 +116,16 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
         UserDetails.init(getApplicationContext());
         context=Dashboard.this;
         AdController.initAd(getApplicationContext());
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
 
+
+        locationText=findViewById(R.id.displayRegion);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            getLocation();
+        }
 
         container = findViewById(R.id.banner_layout);
         AdController.largeBannerAd(Dashboard.this,container);
@@ -386,7 +407,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                         Material material=new Material(materialName,latitude,longitude);
                         materialList.add(material);
                     }
-                    addMarkers(materialList);
+
                     Log.d("Material",materialList+"");
                 }
             }
@@ -397,43 +418,182 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
     }
-//        databaseReferenceUpld.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                materialList.clear();  // Clear the list before adding new data
-//                if ()
-////                for (DataSnapshot materialSnapshot : dataSnapshot.getChildren()) {
-////                    String materialLocation = materialSnapshot.child("Material Location").getValue(String.class);
-////                    String materialDescription = materialSnapshot.child("Material Description").getValue(String.class);
-////
-////                    Log.d(materialDescription+"",materialLocation+"");
-////                    if (materialLocation != null && !materialLocation.isEmpty()) {
-////                        String[] latLng = materialLocation.split(",");
-////                        double latitude = Double.parseDouble(latLng[0]);
-////                        double longitude = Double.parseDouble(latLng[1]);
-////                        materialList.add(new Material(materialDescription, latitude, longitude));
-////                    }
-////                }
-//
-//                // After fetching all materials, add markers to the map
-////                addMarkersOnMap();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Toast.makeText(Dashboard.this, "Failed to load materials.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
 
-//    private void addMarkersOnMap() {
-//        for (Material material : materialList) {
-//            LatLng latLng = new LatLng(material.getLatitude(), material.getLongitude());
-//            gMap.addMarker(new MarkerOptions().position(latLng).title(material.getDescription()));
+//    private void getLocation() {
+//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+//                @Override
+//                public void onLocationChanged(@NonNull Location location) {
+//                    Log.d("TAG", "Location obtained: " + location.toString());
+//                    new Thread(() -> {
+//                        getPlusCode(location);
+//                    }).start();
+//                    locationManager.removeUpdates(this); // Remove updates to prevent multiple calls
+//                }
+//
+//                @Override
+//                public void onStatusChanged(String provider, int status, Bundle extras) {
+//                    Log.d("TAG", "Status changed: " + status);
+//                }
+//
+//                @Override
+//                public void onProviderEnabled(@NonNull String provider) {
+//                    Log.d("TAG", "Provider enabled: " + provider);
+//                }
+//
+//                @Override
+//                public void onProviderDisabled(@NonNull String provider) {
+//                    Log.d("TAG", "Provider disabled: " + provider);
+//                }
+//            });
+//        }
+//    }
+//
+//    private void getPlusCode(Location location) {
+//        double latitude = location.getLatitude();
+//        double longitude = location.getLongitude();
+//        Log.d("TAG", "Getting Plus Code for coordinates: " + latitude + ", " + longitude);
+//
+//        String apiKey = "AIzaSyDXe65LV0wWlF66xuGe2JdSgzlpjAYMy6I"; // Replace with your Google Maps API Key
+//        String apiUrl = String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s", latitude, longitude, apiKey);
+//
+//        try {
+//            URL url = new URL(apiUrl);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestMethod("GET");
+//            int responseCode = connection.getResponseCode();
+//            Log.d("TAG", "Response Code: " + responseCode);
+//
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            StringBuilder response = new StringBuilder();
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                response.append(line);
+//            }
+//            reader.close();
+//            Log.d("TAG", "Response: " + response.toString());
+//            parseGeocodeResponse(response.toString());
+//        } catch (Exception e) {
+//            Log.e("TAG", "Error in getPlusCode", e);
+//        }
+//    }
+//
+//    private void parseGeocodeResponse(String response) {
+//        try {
+//            JSONObject jsonResponse = new JSONObject(response);
+//            JSONArray results = jsonResponse.getJSONArray("results");
+//            if (results.length() > 0) {
+//                JSONObject result = results.getJSONObject(0);
+//                JSONObject plusCode = result.getJSONObject("plus_code");
+//                String plusCodeString = plusCode.getString("global_code");
+//                String city = null;
+//
+//                JSONArray addressComponents = result.getJSONArray("address_components");
+//                for (int i = 0; i < addressComponents.length(); i++) {
+//                    JSONObject component = addressComponents.getJSONObject(i);
+//                    JSONArray types = component.getJSONArray("types");
+//                    for (int j = 0; j < types.length(); j++) {
+//                        if ("locality".equals(types.getString(j))) {
+//                            city = component.getString("long_name");
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                if (city != null) {
+//                    String locationString = String.format("(%s,%s)", plusCodeString, city);
+//                    Log.d("TAG", "Location String: " + locationString);
+//                    runOnUiThread(() -> {
+//                        // Update your UI here with locationString
+//                        Toast.makeText(this, locationString, Toast.LENGTH_LONG).show();
+//                    });
+//                } else {
+//                    Log.d("TAG", "City not found in response.");
+//                }
+//            } else {
+//                Log.d("TAG", "No results found in geocode response.");
+//            }
+//        } catch (Exception e) {
+//            Log.e("TAG", "Error in parseGeocodeResponse", e);
+//        }
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                getLocation();
+//            } else {
+//                // Handle permission denial
+//                Log.d("TAG", "Location permission denied.");
+//            }
 //        }
 //    }
 
+    private void getLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    new Thread(() -> {
+                        getLocationDetails(location);
+                    }).start();
+                    locationManager.removeUpdates(this); // Remove updates to prevent multiple calls
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                @Override
+                public void onProviderEnabled(@NonNull String provider) {}
+
+                @Override
+                public void onProviderDisabled(@NonNull String provider) {}
+            });
+        }
+    }
+
+    private void getLocationDetails(Location location) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String locality = address.getSubLocality();
+                String city = address.getLocality();
+                if (locality == null) {
+                    locality = address.getFeatureName(); // fallback if sub-locality is null
+                }
+                String locationString = "(" + locality + "," + city + ")";
+                Log.d("Location111", locationString);
+                // Update UI with the location string if needed
+                runOnUiThread(() -> {
+                    // Update your UI here with locationString
+                });
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocation();
+            } else {
+                // Handle permission denial
+            }
+        }
+    }
     private void addMarkers(List<Material> materialList){
 
     }
