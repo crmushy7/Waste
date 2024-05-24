@@ -105,6 +105,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     private List<Material> materialList = new ArrayList<>();
     private LocationManager locationManager;
     TextView locationText;
+    public static String LOCATION="";
 
 
     LinearLayout container;
@@ -576,6 +577,8 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                 // Update UI with the location string if needed
                 runOnUiThread(() -> {
                     // Update your UI here with locationString
+                    locationText.setText(locationString);
+                    LOCATION=locationString;
                 });
             }
         } catch (IOException e) {
