@@ -572,7 +572,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                 if (locality == null) {
                     locality = address.getFeatureName(); // fallback if sub-locality is null
                 }
-                String locationString = "(" + locality + "," + city + ")";
+                String locationString = locality + "," + city;
                 Log.d("Location111", locationString);
                 // Update UI with the location string if needed
                 runOnUiThread(() -> {

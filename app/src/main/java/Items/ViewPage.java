@@ -51,6 +51,9 @@ public class ViewPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_page);
+
+        TextView myLocation=findViewById(R.id.displayRegion);
+        myLocation.setText(Dashboard.LOCATION);
         Button plasticbtn=findViewById(R.id.vp_platicBtn);
         Button metalbtn=findViewById(R.id.vp_metalBtn);
         Button woodbtn=findViewById(R.id.vp_woodBtn);
@@ -111,6 +114,7 @@ public class ViewPage extends AppCompatActivity {
                                     String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                     String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                     String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                    String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                     String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                     // Get the first image URL from the ImageUrls child node
                                     String imageUrl = null;
@@ -119,7 +123,7 @@ public class ViewPage extends AppCompatActivity {
                                         imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
                                     }                                    String itemID=dataSnapshot.getKey().toString();
                                     // Create Item object with the details
-                                    ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                     ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                     itemSetGetsList.add(itemConstructor);
 
@@ -164,6 +168,7 @@ public class ViewPage extends AppCompatActivity {
                                         String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                         String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                         String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                        String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                         String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                         // Get the first image URL from the ImageUrls child node
                                         String imageUrl = null;
@@ -172,7 +177,7 @@ public class ViewPage extends AppCompatActivity {
                                             imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
                                         }                                        String itemID=dataSnapshot.getKey().toString();
                                         // Create Item object with the details
-                                        ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                         ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                         itemSetGetsList.add(itemConstructor);
 
@@ -217,6 +222,7 @@ public class ViewPage extends AppCompatActivity {
                                         String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                         String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                         String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                        String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                         String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                         // Get the first image URL from the ImageUrls child node
                                         String imageUrl = null;
@@ -225,7 +231,7 @@ public class ViewPage extends AppCompatActivity {
                                             imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
                                         }                                        String itemID=dataSnapshot.getKey().toString();
                                         // Create Item object with the details
-                                        ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                         ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                         itemSetGetsList.add(itemConstructor);
 
@@ -284,6 +290,7 @@ public class ViewPage extends AppCompatActivity {
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                 String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                 String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                 // Get the first image URL from the ImageUrls child node
                                 String imageUrl = null;
@@ -292,7 +299,7 @@ public class ViewPage extends AppCompatActivity {
                                     imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
                                 }                                String itemID=dataSnapshot.getKey().toString();
                                 // Create Item object with the details
-                                ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                 ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                 itemSetGetsList.add(itemConstructor);
 
@@ -348,6 +355,7 @@ public class ViewPage extends AppCompatActivity {
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                 String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                 String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                 // Get the first image URL from the ImageUrls child node
                                 String imageUrl = null;
@@ -356,7 +364,7 @@ public class ViewPage extends AppCompatActivity {
                                     imageUrl = imageUrlsSnapshot.child("Image").getValue(String.class);
                                 }                                String itemID=dataSnapshot.getKey().toString();
                                 // Create Item object with the details
-                                ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                 ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                 itemSetGetsList.add(itemConstructor);
 
@@ -413,6 +421,7 @@ public class ViewPage extends AppCompatActivity {
                                 String item_uploaddate = dataSnapshot.child("Upload Date").getValue(String.class);
                                 String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                                 String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                                String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                                 String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                                 // Get the first image URL from the ImageUrls child node
                                 String imageUrl = null;
@@ -422,7 +431,7 @@ public class ViewPage extends AppCompatActivity {
                                 }
                                 String itemID=dataSnapshot.getKey().toString();
                                 // Create Item object with the details
-                                ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID,owner_location,owner_name,item_uploaddate,item_materialunit,imageUrl,itemID);
+                                 ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
 
                                 itemSetGetsList.add(itemConstructor);
 
@@ -480,6 +489,7 @@ public class ViewPage extends AppCompatActivity {
                             String item_materialtype = dataSnapshot.child("Material Type").getValue(String.class);
                             String item_materialtitle=dataSnapshot.child("Material Description").getValue(String.class);
                             String item_materialunit=dataSnapshot.child("Material Unit").getValue(String.class);
+                            String item_loc=dataSnapshot.child("Location Name").getValue(String.class);
                             String owner_ID=dataSnapshot.child("Owner ID").getValue(String.class);
                             String itemID=dataSnapshot.getKey().toString();
 
@@ -491,7 +501,7 @@ public class ViewPage extends AppCompatActivity {
                             }
 
                             // Create Item object with the details
-                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_location=" ", owner_name, item_uploaddate, item_materialunit, imageUrl, itemID);
+                            ItemSetGet itemConstructor = new ItemSetGet(item_materialtitle, owner_phonenumber, owner_email, item_materialtype, owner_ID, owner_name, item_uploaddate, item_materialunit, imageUrl, itemID,item_loc);
                             itemSetGetsList.add(itemConstructor);
                         }
 

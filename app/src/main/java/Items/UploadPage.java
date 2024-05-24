@@ -108,6 +108,9 @@ public class UploadPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
+
+        TextView myLocation=findViewById(R.id.displayRegion);
+        myLocation.setText(Dashboard.LOCATION);
         handler=new Handler(Looper.getMainLooper());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -377,6 +380,7 @@ public class UploadPage extends AppCompatActivity {
         upload.child("Material Description").setValue(materialDescription);
         upload.child("Material Unit").setValue(materialUnit);
         upload.child("Material Location").setValue(Latitude+","+Longitude);
+        upload.child("Location Name").setValue(Dashboard.LOCATION);
         upload.child("Owner ID").setValue(FirebaseAuth.getInstance().getUid().toString());
 
         // Store all image URLs in a child node
@@ -421,7 +425,6 @@ public class UploadPage extends AppCompatActivity {
                             // Use the latitude and longitude as needed
                             Latitude=latitude+"";
                             Longitude=longitude+"";
-                            Toast.makeText(UploadPage.this, "Lat: " + latitude + ", Lon: " + longitude, Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(UploadPage.this, "Unable to get location", Toast.LENGTH_SHORT).show();
                         }

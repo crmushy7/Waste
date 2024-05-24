@@ -61,6 +61,8 @@ public class MaterialRequest extends AppCompatActivity {
         final User user = (User) getIntent().getSerializableExtra("user");
         handler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(MaterialRequest.this);
+        TextView myLocation=findViewById(R.id.displayRegion);
+        myLocation.setText(Dashboard.LOCATION);
 
         handler.post(() -> {
             progressDialog = new ProgressDialog(MaterialRequest.this);

@@ -8,25 +8,25 @@ public class ItemSetGet {
     private String ownerEmail;
     private String itemType;
     private String ownerID;
-    private String itemLocation;
     private String itemOwner;
     private  String itemUploadDate;
     private String itemWeight;
     private String itemImage;
     private String itemUniqueID;
+    private String itemLocation;
 
-    public ItemSetGet(String itemName, String ownerPhoneNumber, String ownerEmail, String itemType, String ownerID, String itemLocation, String itemOwner, String itemUploadDate, String itemWeight, String itemImage, String itemUniqueID) {
+    public ItemSetGet(String itemName, String ownerPhoneNumber, String ownerEmail, String itemType, String ownerID, String itemOwner, String itemUploadDate, String itemWeight, String itemImage, String itemUniqueID, String itemLocation) {
         this.itemName = itemName;
         this.ownerPhoneNumber = ownerPhoneNumber;
         this.ownerEmail = ownerEmail;
         this.itemType = itemType;
         this.ownerID = ownerID;
-        this.itemLocation = itemLocation;
         this.itemOwner = itemOwner;
         this.itemUploadDate = itemUploadDate;
         this.itemWeight = itemWeight;
         this.itemImage = itemImage;
         this.itemUniqueID = itemUniqueID;
+        this.itemLocation = itemLocation;
     }
 
     public String getItemName() {
@@ -69,14 +69,6 @@ public class ItemSetGet {
         this.ownerID = ownerID;
     }
 
-    public String getItemLocation() {
-        return itemLocation;
-    }
-
-    public void setItemLocation(String itemLocation) {
-        this.itemLocation = itemLocation;
-    }
-
     public String getItemOwner() {
         return itemOwner;
     }
@@ -115,5 +107,13 @@ public class ItemSetGet {
 
     public void setItemUniqueID(String itemUniqueID) {
         this.itemUniqueID = itemUniqueID;
+    }
+
+    public String getItemLocation() {
+        return itemLocation;
+    }
+
+    public void setItemLocation(String itemLocation) {
+        this.itemLocation = itemLocation;
     }
 }

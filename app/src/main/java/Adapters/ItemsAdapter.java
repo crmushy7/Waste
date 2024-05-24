@@ -94,7 +94,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
         public void bind(ItemSetGet itemSetGet) {
             item_name.setText(itemSetGet.getItemName());
-            item_location.setText("iyumbu,Dodoma");
+            item_location.setText(itemSetGet.getItemLocation());
             dateTextView.setText(itemSetGet.getItemUploadDate());
             item_owner.setText(itemSetGet.getItemOwner());
             item_weight.setText(itemSetGet.getItemWeight());
