@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class ViewPage extends AppCompatActivity {
     private static final int REQUEST_CODE_MATERIAL_REQUEST = 123;
     private static final long TIME_INTERVAL = 2000; // Time interval for double press in milliseconds
     private long mBackPressed;
+    LinearLayout loader;
 
     int x=10;
     List<ItemSetGet> itemlist = new ArrayList<>();
@@ -52,6 +54,7 @@ public class ViewPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_page);
 
+        loader=findViewById(R.id.loader);
         TextView myLocation=findViewById(R.id.displayRegion);
         myLocation.setText(UserDetails.getLocation());
         Button plasticbtn=findViewById(R.id.vp_platicBtn);
@@ -138,6 +141,7 @@ public class ViewPage extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 adapter.updateData(itemSetGetsList);
                                 adapter.notifyDataSetChanged();
+                                loader.setVisibility(View.GONE);
                             });
                         }
 
@@ -190,6 +194,7 @@ public class ViewPage extends AppCompatActivity {
                                 adapter.updateData(itemSetGetsList);
                                 Collections.reverse(itemSetGetsList);
                                 adapter.notifyDataSetChanged();
+                                loader.setVisibility(View.GONE);
 //                        recyclerView.setAdapter(adapter);
 
                             }
@@ -245,6 +250,7 @@ public class ViewPage extends AppCompatActivity {
                                 adapter.updateData(itemSetGetsList);
                                 Collections.reverse(itemSetGetsList);
                                 adapter.notifyDataSetChanged();
+                                loader.setVisibility(View.GONE);
 //                        recyclerView.setAdapter(adapter);
 
                             }
@@ -264,6 +270,7 @@ public class ViewPage extends AppCompatActivity {
         plasticbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loader.setVisibility(View.VISIBLE);
                 plasticbtn.setBackgroundResource(R.drawable.card_bg);
                 plasticbtn.setTextColor(getResources().getColor(R.color.white));
 
@@ -313,6 +320,7 @@ public class ViewPage extends AppCompatActivity {
                         runOnUiThread(() -> {
                             adapter.updateData(itemSetGetsList);
                             adapter.notifyDataSetChanged();
+                            loader.setVisibility(View.GONE);
                         });
                     }
 
@@ -327,6 +335,7 @@ public class ViewPage extends AppCompatActivity {
         metalbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loader.setVisibility(View.VISIBLE);
                 metalbtn.setBackgroundResource(R.drawable.card_bg);
                 metalbtn.setTextColor(getResources().getColor(R.color.white));
 
@@ -377,6 +386,7 @@ public class ViewPage extends AppCompatActivity {
                         Collections.reverse(itemSetGetsList);
                         adapter.notifyDataSetChanged();
 //                        recyclerView.setAdapter(adapter);
+                        loader.setVisibility(View.GONE);
 
                     }
 
@@ -392,6 +402,7 @@ public class ViewPage extends AppCompatActivity {
         woodbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loader.setVisibility(View.VISIBLE);
                 woodbtn.setBackgroundResource(R.drawable.card_bg);
                 woodbtn.setTextColor(getResources().getColor(R.color.white));
 
@@ -443,6 +454,7 @@ public class ViewPage extends AppCompatActivity {
                         adapter.updateData(itemSetGetsList);
                         Collections.reverse(itemSetGetsList);
                         adapter.notifyDataSetChanged();
+                        loader.setVisibility(View.GONE);
 //                        recyclerView.setAdapter(adapter);
 
                     }
@@ -462,6 +474,7 @@ public class ViewPage extends AppCompatActivity {
         allbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loader.setVisibility(View.VISIBLE);
                 allbtn.setBackgroundResource(R.drawable.card_bg);
                 allbtn.setTextColor(getResources().getColor(R.color.white));
 
@@ -509,6 +522,7 @@ public class ViewPage extends AppCompatActivity {
                         runOnUiThread(() -> {
                             adapter.updateData(itemSetGetsList);
                             adapter.notifyDataSetChanged();
+                            loader.setVisibility(View.GONE);
                         });
                     }
 
