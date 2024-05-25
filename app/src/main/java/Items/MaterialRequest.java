@@ -127,7 +127,7 @@ public class MaterialRequest extends AppCompatActivity {
         itemunit.setText(getIntent().getStringExtra("materialunit") + "");
         itemuploaddate.setText(getIntent().getStringExtra("uploaddate") + "");
         itemtype.setText(getIntent().getStringExtra("itemtype") + "");
-        itemlocation.setText(Dashboard.LOCATION + "");
+        itemlocation.setText(getIntent().getStringExtra("location") + "");
 
         backNavbtn.setOnClickListener(new View.OnClickListener() {
             @Override
