@@ -108,20 +108,32 @@
                     android:hint="Last Name"
                     android:paddingLeft="8sp"
                     android:textColorHint="@color/white" />
-                <TextView
-                    android:id="@+id/alreadyhaveaccount"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20sp"
                     android:layout_marginRight="20sp"
-                    android:layout_marginTop="10sp"
+                    android:layout_weight="1"
                     android:layout_gravity="end"
-                    android:text="Already have an account?Sign in"
-                    android:textColor="@color/green"
-                    android:textStyle="italic|bold"
-                    android:clickable="true"
-                    app:layout_constraintTop_toBottomOf="@id/tv_lastName"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    android:layout_marginTop="10sp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account? "
+                        android:textColor="@color/white"
+                        android:textStyle="normal|bold"
+                        android:clickable="true"/>
+                    <TextView
+                        android:id="@+id/alreadyhaveaccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign in"
+                        android:textColor="@color/green"
+                        android:textStyle="italic|bold"
+                        android:clickable="true"/>
+                </LinearLayout>
+
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_nextfirstandlastname"
@@ -369,18 +381,31 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="15sp"
                     android:layout_marginEnd="20sp">
-                    <TextView
-                        android:id="@+id/donthaveaccount"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20sp"
                         android:layout_marginRight="20sp"
                         android:layout_weight="1"
                         android:layout_marginTop="10sp"
-                        android:text="Don't have an account?Sign up"
-                        android:textColor="@color/green"
-                        android:textStyle="italic|bold"
-                        android:clickable="true"/>
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Don't have an account? "
+                            android:textColor="@color/white"
+                            android:textStyle="normal|bold"
+                            android:clickable="true"/>
+                        <TextView
+                            android:id="@+id/donthaveaccount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sign up"
+                            android:textColor="@color/green"
+                            android:textStyle="italic|bold"
+                            android:clickable="true"/>
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/forgotpassword"
                         android:layout_width="wrap_content"

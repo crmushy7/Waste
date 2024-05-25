@@ -380,7 +380,7 @@ public class UploadPage extends AppCompatActivity {
         upload.child("Material Description").setValue(materialDescription);
         upload.child("Material Unit").setValue(materialUnit);
         upload.child("Material Location").setValue(Latitude+","+Longitude);
-        upload.child("Location Name").setValue(Dashboard.LOCATION);
+        upload.child("Location Name").setValue(UserDetails.getLocation());
         upload.child("Owner ID").setValue(FirebaseAuth.getInstance().getUid().toString());
 
         // Store all image URLs in a child node
