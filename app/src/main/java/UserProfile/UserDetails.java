@@ -6,12 +6,16 @@ import android.content.SharedPreferences;
 public class UserDetails {
     private static final String SHARED_PREF_NAME = "User_data";
     private static final String KEY_FULL_NAME = "full_name";
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_POPUP = "popup";
     private static final String KEY_PHONE_NUMBER = "phone_number";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_FCM_TOKEN = "FCM_Token";
 
     private static String fullName;
+    private static String location;
+    private static String popup;
     private static String password;
     private static String phoneNumber;
     private static String email;
@@ -20,6 +24,8 @@ public class UserDetails {
     public static void init(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         fullName = sharedPreferences.getString(KEY_FULL_NAME, null);
+        location = sharedPreferences.getString(KEY_LOCATION, null);
+        popup = sharedPreferences.getString(KEY_POPUP, null);
         phoneNumber = sharedPreferences.getString(KEY_PHONE_NUMBER, null);
         email = sharedPreferences.getString(KEY_EMAIL, null);
         password = sharedPreferences.getString(KEY_PASSWORD, null);
@@ -28,6 +34,12 @@ public class UserDetails {
 
     public static String getFullName() {
         return fullName;
+    }
+    public static String getLocation() {
+        return location;
+    }
+    public static String getPopup() {
+        return popup;
     }
     public static String getPassword() {
         return password;

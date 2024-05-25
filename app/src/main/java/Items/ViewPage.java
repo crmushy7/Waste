@@ -53,7 +53,7 @@ public class ViewPage extends AppCompatActivity {
         setContentView(R.layout.activity_view_page);
 
         TextView myLocation=findViewById(R.id.displayRegion);
-        myLocation.setText(Dashboard.LOCATION);
+        myLocation.setText(UserDetails.getLocation());
         Button plasticbtn=findViewById(R.id.vp_platicBtn);
         Button metalbtn=findViewById(R.id.vp_metalBtn);
         Button woodbtn=findViewById(R.id.vp_woodBtn);

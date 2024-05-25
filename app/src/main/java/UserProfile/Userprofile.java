@@ -137,6 +137,10 @@ public class Userprofile extends AppCompatActivity {
                                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                                        SharedPreferences.Editor editor= sharedPreferences.edit();
+                                        editor.putString("popup","show");
+                                        editor.apply();
                                         FirebaseAuth.getInstance().signOut();
                                         Intent intent=new Intent(Userprofile.this, RegistrationMod.class);
                                         startActivity(intent);

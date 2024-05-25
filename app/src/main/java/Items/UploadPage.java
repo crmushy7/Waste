@@ -110,7 +110,7 @@ public class UploadPage extends AppCompatActivity {
         setContentView(R.layout.activity_upload_page);
 
         TextView myLocation=findViewById(R.id.displayRegion);
-        myLocation.setText(Dashboard.LOCATION);
+        myLocation.setText(UserDetails.getLocation());
         handler=new Handler(Looper.getMainLooper());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 

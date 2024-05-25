@@ -62,7 +62,7 @@ public class MaterialRequest extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(MaterialRequest.this);
         TextView myLocation=findViewById(R.id.displayRegion);
-        myLocation.setText(Dashboard.LOCATION);
+        myLocation.setText(UserDetails.getLocation());
 
         handler.post(() -> {
             progressDialog = new ProgressDialog(MaterialRequest.this);
@@ -224,7 +224,7 @@ public class MaterialRequest extends AppCompatActivity {
 
     }
     private  void sendNotification(User user, String token){
-        progressDialog.show();
+
         DatabaseReference userr=FirebaseDatabase.getInstance().getReference().child("All Users")
                 .child(FirebaseAuth.getInstance().getUid()).child("Details");
         userr.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -232,7 +232,74 @@ public class MaterialRequest extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String token = snapshot.child("FCM Token").getValue(String.class);
                 fcmToken = token;
-                progressDialog.dismiss();
+                String fullname=getIntent().getStringExtra("ownername");
+                String[] name=fullname.split(" ");
+                String title ="From: "+ getIntent().getStringExtra("username");
+                String body = name[0]+", Your uploaded material("+getIntent().getStringExtra("itemtitle1")+") was requested!";
+
+                if(title.isEmpty()){
+
+                    return;
+                }
+
+                if(body.isEmpty()){
+
+                    return;
+                }
+
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://dcts.staffgenie.co.tz/api/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                Api api = retrofit.create(Api.class);
+
+                Call<ResponseBody> call = api.sendNotification(token, title, body);
+
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                Calendar calendar = Calendar.getInstance();
+                                String currentdate = DateFormat.getInstance().format(calendar.getTime());
+                                DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
+                                        .child(getIntent().getStringExtra("ownerID")).push();
+                                uploadNotification.child("ItemID").setValue(getIntent().getStringExtra("itemID"));
+                                uploadNotification.child("Notification Title").setValue(title);
+                                uploadNotification.child("Notification Message").setValue(body);
+                                uploadNotification.child("Contact").setValue(UserDetails.getPhoneNumber());
+                                uploadNotification.child("Notification Status").setValue("Unread");
+                                uploadNotification.child("Collector").setValue(UserDetails.getFullName());
+                                uploadNotification.child("CollectorID").setValue(FirebaseAuth.getInstance().getUid().toString());
+                                uploadNotification.child("Item Name").setValue(getIntent().getStringExtra("itemtitle1"));
+                                uploadNotification.child("Item Type").setValue(getIntent().getStringExtra("itemtype"));
+                                uploadNotification.child("Collector FCM Token").setValue(fcmToken);
+                                uploadNotification.child("Request Status").setValue("Not sold");
+                                uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                            }catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Log.d("What",response+"");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Toast.makeText(MaterialRequest.this, "Owner not notified! try again later", Toast.LENGTH_LONG).show();
+                        Log.d("error",t+"");
+                    }
+                });
             }
 
             @Override
@@ -240,74 +307,7 @@ public class MaterialRequest extends AppCompatActivity {
             progressDialog.dismiss();
             }
         });
-        String fullname=getIntent().getStringExtra("ownername");
-        String[] name=fullname.split(" ");
-        String title ="From: "+ getIntent().getStringExtra("username");
-        String body = name[0]+", Your uploaded material("+getIntent().getStringExtra("itemtitle1")+") was requested!";
 
-        if(title.isEmpty()){
-
-            return;
-        }
-
-        if(body.isEmpty()){
-
-            return;
-        }
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://dcts.staffgenie.co.tz/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Api api = retrofit.create(Api.class);
-
-        Call<ResponseBody> call = api.sendNotification(token, title, body);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        Calendar calendar = Calendar.getInstance();
-                        String currentdate = DateFormat.getInstance().format(calendar.getTime());
-                        DatabaseReference uploadNotification=FirebaseDatabase.getInstance().getReference().child("Received Notifications")
-                                        .child(getIntent().getStringExtra("ownerID")).push();
-                        uploadNotification.child("ItemID").setValue(getIntent().getStringExtra("itemID"));
-                        uploadNotification.child("Notification Title").setValue(title);
-                        uploadNotification.child("Notification Message").setValue(body);
-                        uploadNotification.child("Contact").setValue(UserDetails.getPhoneNumber());
-                        uploadNotification.child("Notification Status").setValue("Unread");
-                        uploadNotification.child("Collector").setValue(UserDetails.getFullName());
-                        uploadNotification.child("CollectorID").setValue(FirebaseAuth.getInstance().getUid().toString());
-                        uploadNotification.child("Item Name").setValue(getIntent().getStringExtra("itemtitle1"));
-                        uploadNotification.child("Item Type").setValue(getIntent().getStringExtra("itemtype"));
-                        uploadNotification.child("Collector FCM Token").setValue(fcmToken);
-                        uploadNotification.child("Request Status").setValue("Not sold");
-                        uploadNotification.child("Notification Sent Time").setValue(currentdate+" Hrs").addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.dismiss();
-                                Toast.makeText(MaterialRequest.this, "The owner was notified!", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    Log.d("What",response+"");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(MaterialRequest.this, "Owner not notified! try again later", Toast.LENGTH_LONG).show();
-                Log.d("error",t+"");
-            }
-        });
 
     }
 }

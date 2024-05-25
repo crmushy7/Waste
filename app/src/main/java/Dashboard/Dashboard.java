@@ -19,6 +19,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -35,6 +36,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -157,28 +160,24 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(new Intent(Dashboard.this, Notifications.class));
             }
         });
-        AlertDialog.Builder builderchatboat=new AlertDialog.Builder(Dashboard.this);
-        View viewChat= LayoutInflater.from(Dashboard.this).inflate(R.layout.chatbot_alert, null);
-        Button later=viewChat.findViewById(R.id.chatbot_later);
-        Button viewChatbot=viewChat.findViewById(R.id.chatbot_view);
-        later.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        viewChatbot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                startActivity(new Intent(Dashboard.this, ChatBotActivity.class));
-            }
-        });
+        if (UserDetails.getPopup()==null){
+            showAlert();
+        } else if (UserDetails.getPopup().equals("never")) {
 
-        builderchatboat.setView(viewChat);
-        dialog=builderchatboat.create();
-        dialog.show();
-        dialog.setCancelable(false);
+        }else{
+            showAlert();
+        }
+
+        if (UserDetails.getLocation()==null){
+            Toast.makeText(context, "fetching location", Toast.LENGTH_SHORT).show();
+        }else{
+            String newloc=UserDetails.getLocation().trim()+"";
+            if (newloc.equals("null")){
+                LOCATION="null";
+            }else{
+                locationText.setText(newloc);
+            }
+        }
 
 
         if (!areNotificationsEnabled()) {
@@ -574,11 +573,33 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 String locationString = locality + "," + city;
                 Log.d("Location111", locationString);
+
                 // Update UI with the location string if needed
                 runOnUiThread(() -> {
                     // Update your UI here with locationString
-                    locationText.setText(locationString);
-                    LOCATION=locationString;
+                    if (UserDetails.getLocation()==null){
+                        SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                        SharedPreferences.Editor editor= sharedPreferences.edit();
+                        editor.putString("location",locationString+"");
+                        editor.apply();
+                        locationText.setText(locationString);
+                    }else{
+                        String newloc=UserDetails.getLocation().trim()+"";
+                        if (newloc.equals("null")){
+                            locationText.setText(locationString);
+                        } else if (newloc.equals(locationString)) {
+                            locationText.setText(newloc);
+                        }else{
+                            SharedPreferences sharedPreferences=getSharedPreferences("User_data",MODE_PRIVATE);
+                            SharedPreferences.Editor editor= sharedPreferences.edit();
+                            editor.putString("location",locationString+"");
+                            editor.apply();
+                            locationText.setText(locationString);
+                        }
+
+                    }
+
+
                 });
             }
         } catch (IOException e) {
@@ -599,6 +620,50 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
     }
     private void addMarkers(List<Material> materialList){
 
+    }
+    private void showAlert(){
+        AlertDialog.Builder builderchatboat=new AlertDialog.Builder(Dashboard.this);
+        View viewChat= LayoutInflater.from(Dashboard.this).inflate(R.layout.chatbot_alert, null);
+        Button later=viewChat.findViewById(R.id.chatbot_later);
+        Button viewChatbot=viewChat.findViewById(R.id.chatbot_view);
+        CheckBox dontShowAgainCheckbox = viewChat.findViewById(R.id.dont_show_again_checkbox);
+
+// Set a listener for the checkbox
+        dontShowAgainCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Handle checkbox checked state
+                    Toast.makeText(Dashboard.this, "Don't show again checked", Toast.LENGTH_SHORT).show();
+                    // Save the preference to not show the dialog again
+                    SharedPreferences preferences = getSharedPreferences("User_data", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("popup","never");
+                    editor.apply();
+                } else {
+                    // Handle checkbox unchecked state if needed
+                }
+            }
+        });
+
+        later.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        viewChatbot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                startActivity(new Intent(Dashboard.this, ChatBotActivity.class));
+            }
+        });
+
+        builderchatboat.setView(viewChat);
+        dialog=builderchatboat.create();
+        dialog.show();
+        dialog.setCancelable(false);
     }
 
 }
