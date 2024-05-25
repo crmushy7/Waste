@@ -67,7 +67,8 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
     AlertDialog dialog;
     Handler handler;
     ProgressDialog progressDialog;
-    LinearLayout container;
+    LinearLayout container,loader;
+    TextView nonotification;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,8 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
         AdController.initAd(getApplicationContext());
 
 
+        nonotification=findViewById(R.id.nonotification);
+        loader=findViewById(R.id.loader);
         container = findViewById(R.id.banner_layout);
         AdController.largeBannerAd(Notifications.this,container);
         recyclerView=findViewById(R.id.notification_recyclerview);
@@ -170,8 +173,11 @@ public class Notifications extends AppCompatActivity implements NotificationAdap
                     adapter.updateData(notificationlist);
                     Collections.reverse(notificationlist);
                     adapter.notifyDataSetChanged();
+                    loader.setVisibility(View.GONE);
                 }else{
                     Toast.makeText(Notifications.this, "No notification!", Toast.LENGTH_SHORT).show();
+                    loader.setVisibility(View.GONE);
+                    nonotification.setVisibility(View.VISIBLE);
                 }
             }
 
