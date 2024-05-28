@@ -329,7 +329,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
 
                             map.addMarker(new MarkerOptions().position(latLng).title("My Location"));
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-                            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                            map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                             DatabaseReference databaseReferenceUpld = FirebaseDatabase.getInstance().getReference().child("Uploads");
 
                             databaseReferenceUpld.addValueEventListener(new ValueEventListener() {
@@ -352,7 +352,7 @@ public class Dashboard extends AppCompatActivity implements OnMapReadyCallback {
                                                     .title(materialName)
                                                     .snippet("Owner Phone: " + ownerPhone)
                                             );
-                                            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                                            map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
                                         }
 
