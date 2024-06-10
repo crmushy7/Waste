@@ -18,9 +18,17 @@ import java.util.concurrent.Executor;
 
 public class GeminiPro {
     public static void getResponse(ChatFutures chatModel, String query, ResponseCallback callback) {
+        String basePrompt = "You are a chatbot that answers questions about waste management and environmental awareness " +
+                "and if it is greeting then respond that greeting also DO NOT BOLD THE RESPONSE " +
+                "AND IF THE QUESTION IS NOT ABOUT waste management and environmental awareness " +
+                "JUST RESPOND BY SAYING SORRY I CAN NOT HELP YOU WITH THAT then say what is you purpose " +
+                "and if the question is about the previous one then respond that (MAKE SURE YOU DO NOT BOLD THE RESPONSE) " +
+                "related to the user's query: ";
+
+        String fullPrompt = basePrompt + query;
         Content.Builder userMessageBuilder = new Content.Builder();
         userMessageBuilder.setRole("user");
-        userMessageBuilder.addText(query);
+        userMessageBuilder.addText(fullPrompt);
         Content userMessage = userMessageBuilder.build();
 
         Executor executor = Runnable::run;
